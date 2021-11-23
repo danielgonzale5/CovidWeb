@@ -16,9 +16,66 @@
     <a class="active">Registros</a>
     <a href="/Gestion">Gestión</a>
     <div class="welcome">
-        <h1>Bienvenido Daniel!</h1>
+      <h1>Bienvenido Daniel!</h1>
     </div>
   </div>
+  <section class="form-register">
+    <h4>Registro de Caso</h4>
+    <span>
+      <h5>Ingrese el Nombre</h5>
+      <input class="controls" type="text" name="nombres" id="nombres" placeholder="Nombre">
+    </span>
+    <span>
+      <h5>Ingrese el Apellido</h5>
+      <input class="controls" type="text" name="apellidos" id="apellidos" placeholder="Apellido">
+    </span>
+    <span>
+      <h5>Ingrese la Cédula</h5>
+      <input class="controls" type="number" name="cedula" id="cedula" placeholder="Cédula">
+    </span>
+    <span>
+      <h5>Seleccione el sexo</h5>
+      <select class="controls" type="dropdown" name="sexo" id="sexo">
+        <option value="" selected disabled hidden>Seleccionar sexo</option>
+        <option value="Administrador">Másculino</option>
+        <option value="Médico">Femenino</option>
+      </select>
+    </span>
+    <span>
+      <h5>Fecha de nacimiento</h5>
+      <input class="controls" type="date" id="nacimiento" name="nacimiento" value="2021-11-27" min="2000-01-01"
+        max="2100-12-31">
+    </span>
+    <span>
+      <h5>Ingrese Dirección de Residencia</h5>
+      <input class="controls" type="text" name="dirres" id="dirres" placeholder="Dirección, Ciudad, País">
+    </span>
+    <span>
+      <h5>Ingrese Dirección de Trabajo</h5>
+      <input class="controls" type="text" name="dirtra" id="dirtra" placeholder="Dirección, Ciudad, País">
+    </span>
+    <span>
+      <h5>Resultado del exámen</h5>
+      <select class="controls" type="dropdown" name="resultado" id="resultado">
+        <option value="" selected disabled hidden>Seleccionar resultado</option>
+        <option value="Positivo">Positivo</option>
+        <option value="Negativo">Negativo</option>
+      </select>
+    </span>
+    <span>
+      <h5>Fecha del exámen</h5>
+      <input class="controls" type="date" id="fechaexa" name="fechaexa" value="2021-11-27" min="2000-01-01"
+        max="2100-12-31">
+    </span>
+    <h5></h5>
+    <span>
+      <h5>Código Generado</h5>
+      <label class="controls" type="text" name="codigo" id="codigo"> - </label>
+    </span>
+    <span>
+      <input class="botons" type="submit" value="Registrar">
+    </span>
+  </section>
 </body>
 
 </html>
