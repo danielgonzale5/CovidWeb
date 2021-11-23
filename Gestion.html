@@ -16,9 +16,103 @@
     <a href="/Registros">Registros</a>
     <a class="active">Gestión</a>
     <div class="welcome">
-        <h1>Bienvenido Daniel!</h1>
+      <h1>Bienvenido Daniel!</h1>
     </div>
   </div>
+  <section class="form-register">
+    <h4>Consultar Caso</h4>
+    <span>
+      <h5>Ingrese el Nombre</h5>
+      <input class="controls" type="text" name="nombresc" id="nombresc" placeholder="Nombre">
+    </span>
+    <span>
+      <h5>Ingrese el Apellido</h5>
+      <input class="controls" type="text" name="apellidosc" id="apellidosc" placeholder="Apellido">
+    </span>
+    <span>
+      <h5>Ingrese la Cédula</h5>
+      <input class="controls" type="number" name="cedulac" id="cedulac" placeholder="Cédula">
+    </span>
+    <span>
+      <h5>Ingrese el Código de Caso</h5>
+      <input class="controls" type="number" name="codigoc" id="codigoc" placeholder="Código">
+    </span>
+    <h5></h5>
+    <span>
+      <input class="botons" type="submit" value="Consultar">
+    </span>
+  </section>
+  <section class="form-register">
+    <h4>Información del Caso</h4>
+    <span>
+      <h5>Nombre del Paciente</h5>
+      <label class="controls" type="text" name="nombres" id="nombres"> - </label>
+    </span>
+    <span>
+      <h5>Apellido del Paciente</h5>
+      <label class="controls" type="text" name="apellidos" id="apellidos"> - </label>
+    </span>
+    <span>
+      <h5>Cédula del Paciente</h5>
+      <label class="controls" type="number" name="cedula" id="cedula"> - </label>
+    </span>
+    <span>
+      <h5>Sexo del Paciente</h5>
+      <label class="controls" type="dropdown" name="sexo" id="sexo"> - </label>
+    </span>
+    <span>
+      <h5>Fecha de nacimiento</h5>
+      <label class="controls" type="text" id="nacimiento" name="nacimiento"> - </label>
+    </span>
+    <span>
+      <h5>Dirección de Residencia</h5>
+      <label class="controls" type="text" name="dirres" id="dirres"> - </label>
+    </span>
+    <span>
+      <h5>Dirección de Trabajo</h5>
+      <label class="controls" type="text" name="dirtra" id="dirtra"> - </label>
+    </span>
+    <span>
+      <h5>Resultado del exámen</h5>
+      <label class="controls" type="text" name="resultado" id="resultado"> - </label>
+    </span>
+    <span>
+      <h5>Fecha del exámen</h5>
+      <label class="controls" type="text" id="fechaexa" name="fechaexa"> - </label>
+    </span>
+    <span>
+      <h5>Código del Caso</h5>
+      <label class="controls" type="text" name="codigo" id="codigo"> - </label>
+    </span>
+    <h5></h5>
+    <span style="width: 500px;">
+      <h5>Estado del Paciente</h5>
+      <label class="controls" type="text" name="estado" id="estado"> - </label>
+    </span>
+    <h5></h5>
+    <span style="width: 500px;">
+      <h5>Actualizar Estado del Paciente</h5>
+      <select class="controls" type="text" name="estado" id="estado">
+        <option value="" selected disabled hidden>Actualizar Estado</option>
+        <option value="Sano">Sano</option>
+        <option value="En Tratamiento Casa">En Tratamiento Casa</option>
+        <option value="En tratamiento Hospital">En tratamiento Hospital</option>
+        <option value="En UCI">En UCI</option>
+        <option value="Curado">Curado</option>
+        <option value="Muerte">Muerte</option>
+      </select>
+    </span>
+    <span>
+      <input class="botons" type="submit" value="Actualizar">
+    </span>
+  </section>
+  <section class="form-register">
+    <h4>Historial</h4>
+    <table>
+      <th>Fecha</th>
+      <th>Estado</th>
+    </table>
+  </section>
 </body>
 
 </html>
