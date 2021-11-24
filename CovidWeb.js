@@ -102,6 +102,23 @@ con.connect((err) => {
 
 app.use(express.json({ limit: '200mb' }));
 
+app.post('/login', function (req, res) {
+  console.log("Enviando Validación de Login")
+  console.log(req.body);
+  var UsuData = req.body;
+  var User = UsuData.user.toString();
+  var Contra = UsuData.pass.toString();
+  con.query("SELECT * FROM usuarios WHERE usuario = ('" + User + "') AND contraseña = ('" + Contra + "');", function (err, rows) {
+    if (err) throw err;
+    var UData = JSON.parse(JSON.stringify(rows))
+    var VUsuRol = Object.values(UData[3])
+    var RolUsu = VUsuRol
+    io.emit('roluser', {
+      RolUsu: RolUsu
+    });
+  });
+});
+
 app.post('/userinfo', function (req, res) {
   console.log("Enviando Validación de Usuario")
   console.log(req.body);
@@ -230,12 +247,7 @@ app.post('/consulta1', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE cedula = ('" + cstcedu + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    var CeduData3 = JSON.parse(JSON.stringify(rows))
-    var EstadoCs = Object.values(CeduData3)
-
-    io.emit('histcaso', {
-
-    });
+    io.emit('histcaso', rows);
   });
 });
 
@@ -280,12 +292,7 @@ app.post('/consulta2', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE idcaso = ('" + cstcodigo + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    var CodeData3 = JSON.parse(JSON.stringify(rows))
-    var EstadoCs = Object.values(CodeData3)
-
-    io.emit('histcaso', {
-
-    });
+    io.emit('histcaso', rows);
   });
 });
 
@@ -331,11 +338,6 @@ app.post('/consulta3', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE nombre = ('" + cstnombre + "') AND apellido = ('" + cstapellido + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    var NameData3 = JSON.parse(JSON.stringify(rows))
-    var EstadoCs = Object.values(NameData3)
-
-    io.emit('histcaso', {
-
-    });
+    io.emit('histcaso', rows);
   });
 });
