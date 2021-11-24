@@ -108,10 +108,7 @@
   </section>
   <section class="form-register">
     <h4>Historial</h4>
-    <table>
-      <th>Fecha</th>
-      <th>Estado</th>
-    </table>
+    <div class="controls" name="table" id="table"></div>
   </section>
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -206,9 +203,14 @@
       document.getElementById("estado").innerHTML = SteCs.EstadoCs;
     });
 
-    io().on('histcaso', function (HisCs) {
+    io().on('histcaso', function (rows) {
       console.log('Historial del caso');
-
+      var html='';
+        for (var i=0; i<rows.length; i++) {
+          html += rows[i].firstname + ' ' + rows[i].lastname + '<br>';
+        }  
+        document.getElementById("table").innerHTML = html;
+        console.log(rows);
     });
 
     async function Consultar(opt) {

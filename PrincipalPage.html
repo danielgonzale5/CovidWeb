@@ -14,12 +14,44 @@
     <a class="active">Principal</a>
     <div class="login-container">
       <form action="/action_page.php">
-        <input type="text" placeholder="Username" name="username">
-        <input type="text" placeholder="Password" name="psw">
-        <button type="submit">Login</button>
+        <input type="text" placeholder="Username" name="username" id="username">
+        <input type="text" placeholder="Password" name="psw" id="password">
+        <button type="submit" onclick="check()">Login</button>
       </form>
     </div>
   </div>
 </body>
+
+<script>
+
+  async function check() {
+    user = document.getElementById('username').value;
+    pass = document.getElementById('password').value;
+    const info = { user, pass };
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(info)
+    };
+    await fetch('/login', options);
+  }
+
+  io().on('roluser', function (VUsu) {
+      console.log('Validación de Usuario y Contraseña');
+      if (VUsu.RolUsu == 3) {
+        location.href = '/PrincipalPageAdmin'
+      } else if (VUsu.RolUsu == 2) {
+        location.href = '/PrincipalPageAyudante'
+      } else if (VUsu.RolUsu == 3) {
+        location.href = '/PrincipalPageMedico'
+      } else {
+        alert("El Usuario o la Contraseña no existen o son incorrectos")
+          console.log("Usuario y Contraseña no coincidieron en base de datos")
+      }
+    });
+
+</script>
 
 </html>
