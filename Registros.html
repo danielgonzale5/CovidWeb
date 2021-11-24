@@ -73,9 +73,40 @@
       <label class="controls" type="text" name="codigo" id="codigo"> - </label>
     </span>
     <span>
-      <input class="botons" type="submit" value="Registrar">
+      <input class="botons" type="submit" onclick="Registro_Caso()" value="Registrar">
     </span>
   </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+
+    io().on('coderegis', function (CdR) {
+      console.log('Codigo de registro recibido');
+      document.getElementById("codigo").innerHTML = CdR.Code;
+    });
+
+    async function Registro_Caso() {
+      var cedula = document.getElementById('cedula').value;
+      var nombre = document.getElementById('nombres').value;
+      var apellido = document.getElementById('apellidos').value;
+      var sexo = document.getElementById('sexo').value;
+      var fecha_nacimiento = document.getElementById('nacimiento').value;
+      var direccion_residencia = document.getElementById('dirres').value;
+      var direccion_trabajo = document.getElementById('dirtra').value;
+      var resultado_examen = document.getElementById('resultado').value;
+      var fecha_examen = document.getElementById('fechaexa').value;
+      const info = { nombre, apellido, cedula, fecha_nacimiento, direccion_residencia, direccion_trabajo, resultado_examen, fecha_examen };
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(info)
+      };
+      await fetch('/regis', options);
+    }
+  </script>
 </body>
 
 </html>
