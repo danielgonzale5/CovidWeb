@@ -108,6 +108,7 @@ app.post('/login', function (req, res) {
   var UsuData = req.body;
   var User = UsuData.user.toString();
   var Contra = UsuData.pass.toString();
+  console.log(User, Contra);
   con.query("SELECT * FROM usuarios WHERE usuario = ('" + User + "') AND contraseña = ('" + Contra + "');", function (err, rows) {
     if (err) throw err;
     var UData = JSON.parse(JSON.stringify(rows))
