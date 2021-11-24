@@ -1,4 +1,4 @@
-//Inicialización de Variables Globales y definición de librerías importantes...
+//Inicialización de Variables Globales y definición de librerías importantes
 const express = require('express');
 var app = require('express')();
 var server = require('http').createServer(app);
