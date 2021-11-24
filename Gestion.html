@@ -39,7 +39,7 @@
     </span>
     <h5></h5>
     <span>
-      <input class="botons" type="submit" value="Consultar">
+      <input class="botons" type="submit" onclick="PreConsultar()" value="Consultar">
     </span>
   </section>
   <section class="form-register">
@@ -92,7 +92,7 @@
     <h5></h5>
     <span style="width: 500px;">
       <h5>Actualizar Estado del Paciente</h5>
-      <select class="controls" type="text" name="estado" id="estado">
+      <select class="controls" type="text" name="estadoa" id="estadoa">
         <option value="" selected disabled hidden>Actualizar Estado</option>
         <option value="Sano">Sano</option>
         <option value="En Tratamiento Casa">En Tratamiento Casa</option>
@@ -103,7 +103,7 @@
       </select>
     </span>
     <span>
-      <input class="botons" type="submit" value="Actualizar">
+      <input class="botons" type="submit" onclick="Actualizar()" value="Actualizar">
     </span>
   </section>
   <section class="form-register">
@@ -113,6 +113,143 @@
       <th>Estado</th>
     </table>
   </section>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+
+    var NV = false;
+    var NF = false;
+    var opt;
+
+    function PreConsultar() {
+      var ccedu = document.getElementById('cedulac').value;
+      var cnombre = document.getElementById('nombresc').value;
+      var capellido = document.getElementById('apellidosc').value;
+      var ccodigo = document.getElementById('codigoc').value;
+      if (ccedu != null) {
+        opt = 1;
+        Consultar(opt);
+      } else if (ccodigo != null) {
+        opt = 2;
+        Consultar(opt);
+      } else if (cnombre != null && capellido == null) {
+        alert("Por favor ingrese el apellido")
+        console.log("Falta el apellido")
+      } else if (cnombre == null && capellido != null) {
+        alert("Por favor ingrese el nombre")
+        console.log("Falta el nombre")
+      } else if (cnombre != null && capellido != null) {
+        CheckConsulta();
+        if (NV == true && NF == false) {
+          opt = 3;
+          Consultar(opt);
+        } else {
+          alert("Existe más de un usuario con el nombre igresado")
+          console.log("Increible")
+        }
+      }
+    }
+
+    async function Actualizar() {
+      var actestado = document.getElementById('estadoa').value;
+      const info = { actestado };
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(info)
+      };
+      await fetch('/actestate', options);
+    }
+
+    io().on('namechecked', function (NameChk) {
+      console.log('Verificación de nombres y apellidos');
+      if (NameChk.NameChecked == 1) {
+        NV = true;
+        NF = false;
+      } else {
+        NV = false;
+        NF = true;
+      }
+    });
+
+    async function CheckConsulta() {
+      var nombrec = document.getElementById('nombresc').value;
+      var apellidoc = document.getElementById('apellidosc').value;
+      const info = { nombrec, apellidoc };
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(info)
+      };
+      await fetch('/cosltcheck', options);
+    }
+
+    io().on('infocase', function (InfCs) {
+      console.log('Información del caso');
+      document.getElementById("nombres").innerHTML = InfCs.NombreCs;
+      document.getElementById("apellidos").innerHTML = InfCs.ApellidoCs;
+      document.getElementById("cedula").innerHTML = InfCs.CedulaCs;
+      document.getElementById("sexo").innerHTML = InfCs.SexoCs;
+      document.getElementById("nacimiento").innerHTML = InfCs.NacimientoCs;
+      document.getElementById("dirres").innerHTML = InfCs.ResidenciaCs;
+      document.getElementById("dirtra").innerHTML = InfCs.TrabajoCs;
+      document.getElementById("resultado").innerHTML = InfCs.ResultadoCs;
+      document.getElementById("fechaexa").innerHTML = InfCs.FExamenCs;
+      document.getElementById("codigo").innerHTML = InfCs.CodigoCs;
+    });
+
+    io().on('estadocaso', function (SteCs) {
+      console.log('Estado del paciente');
+      document.getElementById("estado").innerHTML = SteCs.EstadoCs;
+    });
+
+    io().on('histcaso', function (HisCs) {
+      console.log('Historial del caso');
+
+    });
+
+    async function Consultar(opt) {
+      var ctcedu = document.getElementById('cedulac').value;
+      var ctnombre = document.getElementById('nombresc').value;
+      var ctapellido = document.getElementById('apellidosc').value;
+      var ctcodigo = document.getElementById('codigoc').value;
+      if (opt == 1) {
+        const info = { ctcedu };
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(info)
+        };
+        await fetch('/consulta1', options);
+      } else if (opt == 2) {
+        const info = { ctcodigo };
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(info)
+        };
+        await fetch('/consulta2', options);
+      } else if (opt == 3) {
+        const info = { ctnombre, ctapellido };
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(info)
+        };
+        await fetch('/consulta3', options);
+      }
+    }
+
+  </script>
 </body>
 
 </html>
