@@ -85,9 +85,9 @@ server.listen(port, function (error) {
 //Llamado de las variables de entorno y de librería MySQL para la Base de datos.
 const mysql = require('mysql');
 var con = mysql.createConnection({
-  host: "localhost",
+  host: "covidweb.cglibizn6is8.us-east-2.rds.amazonaws.com",
   user: "root",
-  password: "12345",
+  password: "covid12345",
   database: 'covidweb'
 });
 
