@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navigation Bar Admin</title>
+  <title>Administración</title>
   <link rel="stylesheet" href="Administracion.css">
 </head>
 
@@ -15,7 +15,7 @@
     <a href="/PrincipalPageAdmin">Principal</a>
     <a class="active">Administración</a>
     <div class="welcome">
-      <h1>Bienvenido Daniel!</h1>
+      <h1>¡Bienvenido!</h1>
     </div>
   </div>
   <section class="form-register">
@@ -32,28 +32,36 @@
     <input class="controls" type="text" name="user" id="user" placeholder="Ingrese su Usuario">
     <input class="controls" type="password" name="pass1" id="pass1" placeholder="Ingrese su Contraseña">
     <input class="controls" type="password" name="pass2" id="pass2" placeholder="Ingrese su Contraseña Nuevamente">
-    <input class="botons" type="submit" onclick="Check()" value="Registrar">
+    <input class="botons" type="submit" onclick="CheckUser()" value="Registrar">
   </section>
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
     var UsV = false;
-    var UsF = false;
+    var CdV = false;
 
     io().on('userchecked', function (UsChk) {
       console.log('Verificación de usuario realizada');
-      if (UsChk.UsInfChk != null) {
+      if (UsChk.UsInfChk.toString() == "0" && UsChk.CdInfChk.toString() == "0") {
         UsV = true;
-        UsF = false;
-      } else {
+        CdV = true;
+      } else if (UsChk.UsInfChk.toString() == "0" && UsChk.CdInfChk.toString() == "1") {
+        UsV = true;
+        CdV = false;
+      } else if (UsChk.UsInfChk.toString() == "1" && UsChk.CdInfChk.toString() == "0") {
         UsV = false;
-        UsF = true;
+        CdV = true;
+      } else if (UsChk.UsInfChk.toString() == "1" && UsChk.CdInfChk.toString() == "1") {
+        UsV = false;
+        CdV = false;
       }
+      Check();
     });
 
     async function CheckUser() {
       datauser = document.getElementById('user').value;
-      const info = { datauser };
+      datacedu = document.getElementById('cedula').value;
+      const info = { datauser, datacedu };
       const options = {
         method: 'POST',
         headers: {
@@ -64,11 +72,23 @@
       await fetch('/userinfo', options);
     }
 
+
     async function Registrar() {
       var datanombre = document.getElementById('nombres').value;
       var dataapellido = document.getElementById('apellidos').value;
       var datacedula = document.getElementById('cedula').value;
-      var datarol = document.getElementById('rol').value;
+      var predatarol = document.getElementById('rol').value;
+      if (predatarol == "Administrador") {
+        var datarol = 3;
+      } else if (predatarol == "Médico") {
+        var datarol = 1;
+      } else if (predatarol == "Ayudante") {
+        var datarol = 2;
+      } else {
+        alert("El Usuario o la Contraseña no existen o son incorrectos")
+          console.log("No seleccionó un rol")
+          return;
+      }
       var datausuario = document.getElementById('user').value;
       var datacontra = document.getElementById('pass1').value;
       const info = { datanombre, dataapellido, datacedula, datarol, datausuario, datacontra };
@@ -81,15 +101,21 @@
       };
       await fetch('/regisinfo', options);
     }
-
-    function Check() {
+function Check() {
       if (document.getElementById('pass1').value == document.getElementById('pass2').value) {
-        CheckUser();
-        if ((UsV == true) && (UsF == false)) {
+        if ((UsV == true) && (CdV == true)) {
           Registrar();
-        } else {
+          UsV = false;
+          CdV = false;
+        } else if ((UsV == true) && (CdV == false)) {
+          alert("la cedula ya existe")
+          console.log("La cedula ya existe")
+        } else if ((UsV == false) && (CdV == true)) {
           alert("El usuario ya existe")
           console.log("El usuario ya existe")
+        } else if ((UsV == false) && (CdV == false)) {
+          alert("El usuario y la cedula ya existen")
+          console.log("El usuario y cedula ya existe")
         }
       } else {
         alert("La contraseña no coincide")

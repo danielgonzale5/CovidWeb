@@ -16,7 +16,7 @@
     <a class="active">Registros</a>
     <a href="/Gestion">Gestión</a>
     <div class="welcome">
-      <h1>Bienvenido Daniel!</h1>
+      <h1>¡Bienvenido!</h1>
     </div>
   </div>
   <section class="form-register">
@@ -37,8 +37,8 @@
       <h5>Seleccione el sexo</h5>
       <select class="controls" type="dropdown" name="sexo" id="sexo">
         <option value="" selected disabled hidden>Seleccionar sexo</option>
-        <option value="Administrador">Másculino</option>
-        <option value="Médico">Femenino</option>
+        <option value="Masculino">Másculino</option>
+        <option value="Femenino">Femenino</option>
       </select>
     </span>
     <span>
@@ -73,13 +73,35 @@
       <label class="controls" type="text" name="codigo" id="codigo"> - </label>
     </span>
     <span>
-      <input class="botons" type="submit" onclick="Registro_Caso()" value="Registrar">
+      <input class="botons" type="submit" onclick="CheckCed()" value="Registrar">
     </span>
   </section>
 
   <script src="/socket.io/socket.io.js"></script>
 
   <script>
+    io().on('rceduchecked', function (CdChk) {
+      console.log('Verificación de cedula realizada');
+      if (CdChk.CedInfChk.toString() == "0") {
+        Registro_Caso();
+      } else if (CdChk.CedInfChk.toString() == "1") {
+        alert("Ya existe un caso con esta cédula, por favor gestione el caso")
+        console.log("Ya existe un caso con la cedula")
+      }
+    });
+
+    async function CheckCed() {
+      datacedu = document.getElementById('cedula').value;
+      const info = { datacedu };
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(info)
+      };
+      await fetch('/rcedinfo', options);
+    }
 
     io().on('coderegis', function (CdR) {
       console.log('Codigo de registro recibido');
@@ -90,13 +112,31 @@
       var cedula = document.getElementById('cedula').value;
       var nombre = document.getElementById('nombres').value;
       var apellido = document.getElementById('apellidos').value;
-      var sexo = document.getElementById('sexo').value;
+      var presexo = document.getElementById('sexo').value;
+      if (presexo == "Masculino") {
+        var sexo = 0;
+      } else if (presexo == "Femenino") {
+        var sexo = 1;
+      } else {
+        alert("Por favor seleccione el sexo")
+          console.log("No seleccionó el sexo")
+          return;
+      }
       var fecha_nacimiento = document.getElementById('nacimiento').value;
       var direccion_residencia = document.getElementById('dirres').value;
       var direccion_trabajo = document.getElementById('dirtra').value;
-      var resultado_examen = document.getElementById('resultado').value;
+      var preresultado_examen = document.getElementById('resultado').value;
+      if (preresultado_examen == "Positivo") {
+        var resultado_examen = 0;
+      } else if (preresultado_examen == "Negativo") {
+        var resultado_examen = 1;
+      } else {
+        alert("Por favor seleccione el resultado")
+          console.log("No seleccionó un resultado")
+          return;
+      }
       var fecha_examen = document.getElementById('fechaexa').value;
-      const info = { nombre, apellido, cedula, fecha_nacimiento, direccion_residencia, direccion_trabajo, resultado_examen, fecha_examen };
+      const info = { nombre, apellido, cedula, sexo, fecha_nacimiento, direccion_residencia, direccion_trabajo, resultado_examen, fecha_examen };
       const options = {
         method: 'POST',
         headers: {

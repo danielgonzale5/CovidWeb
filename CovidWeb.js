@@ -83,7 +83,7 @@ server.listen(port, function (error) {
 })
 
 //Llamado de las variables de entorno y de librería MySQL para la Base de datos.
-const mysql = require('mysql');
+const mysql = require('mysql2');
 var con = mysql.createConnection({
   host: "covidweb.cglibizn6is8.us-east-2.rds.amazonaws.com",
   user: "root",
@@ -111,9 +111,15 @@ app.post('/login', function (req, res) {
   console.log(User, Contra);
   con.query("SELECT * FROM usuarios WHERE usuario = ('" + User + "') AND contraseña = ('" + Contra + "');", function (err, rows) {
     if (err) throw err;
-    var UData = JSON.parse(JSON.stringify(rows))
-    var VUsuRol = Object.values(UData[3])
-    var RolUsu = VUsuRol
+    if (rows.length !=0) {
+      var UData = JSON.parse(JSON.stringify(rows[0]))
+      console.log(UData)
+      console.log(parseInt(UData.rol))
+      var VUsuRol = parseInt(UData.rol);
+      var RolUsu = VUsuRol
+    } else {
+      var RolUsu = 4
+    }
     io.emit('roluser', {
       RolUsu: RolUsu
     });
@@ -125,13 +131,25 @@ app.post('/userinfo', function (req, res) {
   console.log(req.body);
   var UsData = req.body;
   var Usu = UsData.datauser.toString();
+  var Ced = UsData.datacedu.toString();
   con.query("SELECT * FROM usuarios WHERE usuario = ('" + Usu + "');", function (err, rows) {
     if (err) throw err;
-    var UsuData = JSON.parse(JSON.stringify(rows))
-    var DataUsu = Object.values(UsuData[0])
-    var UsInfChk = DataUsu
-    io.emit('userchecked', {
-      UsInfChk: UsInfChk
+    if (rows.length != 0) {
+      var UsInfChk = 1
+    } else {
+      var UsInfChk = 0
+    }
+    con.query("SELECT * FROM usuarios WHERE cedula = ('" + Ced + "');", function (err, rows) {
+      if (err) throw err;
+      if (rows.length != 0) {
+        var CdInfChk = 1
+      } else {
+        var CdInfChk = 0
+      }
+      io.emit('userchecked', {
+        UsInfChk: UsInfChk,
+        CdInfChk: CdInfChk
+      });
     });
   });
 });
@@ -144,7 +162,7 @@ app.post('/regisinfo', function (req, res) {
   var Pass = UsData.datacontra.toString();
   var Name = UsData.datanombre.toString();
   var LName = UsData.dataapellido.toString();
-  var Rol = UsData.datarol.toInt();
+  var Rol = parseInt(UsData.datarol);
   var Cedu = parseFloat(UsData.datacedula.toString());
   var Imysql = "INSERT INTO usuarios (cedula, nombre, apellido, rol, usuario, contraseña) VALUES ?";
   var values = [[Cedu, Name, LName, Rol, Usu, Pass]];
@@ -158,14 +176,14 @@ app.post('/regis', function (req, res) {
   console.log("Anexando caso")
   console.log(req.body);
   var dataCase = req.body;
-  var cedula_post = dataCase.cedula.toString();
+  var cedula_post = parseFloat(dataCase.cedula);
   var nombre_post = dataCase.nombre.toString();
   var apellido_post = dataCase.apellido.toString();
-  var sexo_post = dataCase.sexo.toString();
+  var sexo_post = parseInt(dataCase.sexo);
   var fecha_nacimiento_post = dataCase.fecha_nacimiento.toString();
   var direccion_residencia_post = dataCase.direccion_residencia.toString();
   var direccion_trabajo_post = dataCase.direccion_trabajo.toString();
-  var resultado_examen_post = dataCase.resultado_examen.toString();
+  var resultado_examen_post = parseInt(dataCase.resultado_examen);
   var fecha_examen_post = dataCase.fecha_examen.toString();
 
   var Imysql = "INSERT INTO registro_pacientes (cedula, nombre, apellido, sexo, fecha_nacimiento, dir_residencia, dir_trabajo, resultado, fecha_examen) VALUES ?";
@@ -177,14 +195,33 @@ app.post('/regis', function (req, res) {
 
   con.query("SELECT * FROM registro_pacientes ORDER BY idcaso DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    var CaseData = JSON.parse(JSON.stringify(rows))
-    var DataCase = Object.values(CaseData[0])
+    var CaseData = JSON.parse(JSON.stringify(rows[0]))
+    var DataCase = CaseData.idcaso
     var Code = DataCase
     io.emit('coderegis', {
       Code: Code
     });
   });
 });
+
+app.post('/rcedinfo', function (req, res) {
+  console.log("Enviando Validación de Cédula")
+  console.log(req.body);
+  var CdData = req.body;
+  var Ced = CdData.datacedu.toString();
+  con.query("SELECT * FROM registro_pacientes WHERE cedula = ('" + Ced + "');", function (err, rows) {
+    if (err) throw err;
+    if (rows.length != 0) {
+      var CedInfChk = 1;
+    } else {
+      var CedInfChk = 0;
+    }
+    io.emit('rceduchecked', {
+      CedInfChk: CedInfChk
+    });
+  });
+});
+
 app.post('/cosltcheck', function (req, res) {
   console.log("Chequeando nombre")
   console.log(req.body);
