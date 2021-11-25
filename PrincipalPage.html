@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Navigation Bar with Login Form</title>
+  <title>CovidWeb Home</title>
   <link rel="stylesheet" href="PrincipalPage.css">
 </head>
 
@@ -16,12 +16,12 @@
       <form>
         <input type="text" placeholder="Username" name="username" id="username">
         <input type="password" placeholder="Password" name="psw" id="password">
-        <button type="submit" onclick="check()">Login</button>
+        <button type="button" onclick="check()">Login</button>
       </form>
     </div>
   </div>
 </body>
-
+<script src="/socket.io/socket.io.js"></script>
 <script>
 
   async function check() {
@@ -40,11 +40,12 @@
 
   io().on('roluser', function (VUsu) {
       console.log('Validación de Usuario y Contraseña');
-      if (VUsu.RolUsu == 3) {
+      console.log(VUsu.RolUsu.toString())
+      if (VUsu.RolUsu.toString() == "3") {
         location.href = '/PrincipalPageAdmin'
-      } else if (VUsu.RolUsu == 2) {
+      } else if (VUsu.RolUsu.toString() == "2") {
         location.href = '/PrincipalPageAyudante'
-      } else if (VUsu.RolUsu == 3) {
+      } else if (VUsu.RolUsu.toString() == "1") {
         location.href = '/PrincipalPageMedico'
       } else {
         alert("El Usuario o la Contraseña no existen o son incorrectos")
