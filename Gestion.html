@@ -103,7 +103,12 @@
       </select>
     </span>
     <span>
-      <input class="botons" type="submit" onclick="Actualizar()" value="Actualizar">
+      <h5>Fecha de Modificación</h5>
+      <input class="controls" type="date" id="fmod" name="fmod" value="2021-11-27" min="2000-01-01"
+      max="2100-12-31">
+    </span>
+    <span>
+      <input class="botons" type="submit" onclick="CheckActualizar()" value="Actualizar">
     </span>
   </section>
   <section class="form-register">
@@ -138,9 +143,22 @@
       }
     }
 
+    function CheckActualizar() {
+      var codcnt = document.getElementById('codigo').textContent;
+      if (codcnt =! " - ") {
+        Actualizar();
+      } else {
+        alert("Por favor realice una consulta antes de actualizar")
+        console.log("Falta el codigo: ", codcnt)
+      }
+    }
+
     async function Actualizar() {
       var actestado = document.getElementById('estadoa').value;
-      const info = { actestado };
+      var actcedu = document.getElementById('cedula').textContent;
+      var actcode = document.getElementById('codigo').textContent;
+      var actfemod = document.getElementById('fmod').value;
+      const info = { actestado, actcedu, actcode, actfemod };
       const options = {
         method: 'POST',
         headers: {
@@ -282,11 +300,11 @@
           } else if (rows[i - 1].estado == "6") {
             var state = "En Tratamiento Casa";
           }
-          html += state + ' ' + rows[i - 1].fechamod.split('T', 1)[0] + '<br>';
+          fechamod = rows[i - 1].fecha_mod;
+          html += state + ' ' + fechamod.split('T', 1)[0] + '<br>';
         }
       }
       document.getElementById("table").innerHTML = html;
-      console.log(rows);
     });
 
     async function Consultar(opt) {
