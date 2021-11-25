@@ -222,7 +222,43 @@ app.post('/rcedinfo', function (req, res) {
   });
 });
 
-app.post('/cosltcheck', function (req, res) {
+app.post('/cosltcheck1', function (req, res) {
+  console.log("Chequeando nombre")
+  console.log(req.body);
+  var cedulcheck = req.body;
+  var cedulachk = cedulcheck.cedulac.toString();
+  con.query("SELECT * FROM registro_pacientes WHERE cedula = ('" + cedulachk + "');", function (err, rows) {
+    if (err) throw err;
+    if (rows.length != 0) {
+      var CedulaCChecked = 1;
+    } else {
+      var CedulaCChecked = 0;
+    }
+    io.emit('cedulchecked', {
+      CedulaCChecked: CedulaCChecked
+    });
+  });
+});
+
+app.post('/cosltcheck2', function (req, res) {
+  console.log("Chequeando nombre")
+  console.log(req.body);
+  var cdgcheck = req.body;
+  var codgchk = cdgcheck.codigoc.toString();
+  con.query("SELECT * FROM registro_pacientes WHERE idcaso = ('" + codgchk + "');", function (err, rows) {
+    if (err) throw err;
+    if (rows.length != 0) {
+      var CodigoCChecked = 1;
+    } else {
+      var CodigoCChecked = 0;
+    }
+    io.emit('codigchecked', {
+      CodigoCChecked: CodigoCChecked
+    });
+  });
+});
+
+app.post('/cosltcheck3', function (req, res) {
   console.log("Chequeando nombre")
   console.log(req.body);
   var namecheck = req.body;
@@ -230,10 +266,7 @@ app.post('/cosltcheck', function (req, res) {
   var apellidochk = namecheck.apellidoc.toString();
   con.query("SELECT * FROM registro_pacientes WHERE apellido = ('" + apellidochk + "') AND nombre = ('" + nombrechk + "');", function (err, rows) {
     if (err) throw err;
-    var CaseData = JSON.parse(JSON.stringify(rows))
-    var DataCase = Object.values(CaseData)
-    var DataL = DataCase.length
-    if (DataL == 1) {
+    if (rows.length != 0) {
       var NameChecked = 1;
     } else {
       var NameChecked = 0;
@@ -251,16 +284,26 @@ app.post('/consulta1', function (req, res) {
   var cstcedu = consult.ctcedu;
   con.query("SELECT * FROM registro_pacientes WHERE cedula = ('" + cstcedu + "') ;", function (err, rows) {
     if (err) throw err;
-    var CeduData = JSON.parse(JSON.stringify(rows))
-    var CodigoCs = Object.values(CeduData[0])
-    var CedulaCs = Object.values(CeduData[1])
-    var NombreCs = Object.values(CeduData[2])
-    var ApellidoCs = Object.values(CeduData[3])
-    var SexoCs = Object.values(CeduData[4])
-    var ResidenciaCs = Object.values(CeduData[5])
-    var TrabajoCs = Object.values(CeduData[6])
-    var ResultadoCs = Object.values(CeduData[7])
-    var FExaCs = Object.values(CeduData[8])
+    var CeduData = JSON.parse(JSON.stringify(rows[0]))
+    var CodigoCs = CeduData.idcaso.toString();
+    var CedulaCs = CeduData.cedula.toString();
+    var NombreCs = CeduData.nombre.toString();
+    var ApellidoCs = CeduData.apellido.toString();
+    var PreSexoCs = CeduData.sexo.toString();
+    if (PreSexoCs == "0") {
+      var SexoCs = "Masculino"
+    } else if (PreSexoCs == "1") {
+      var SexoCs = "Femenino"
+    }
+    var ResidenciaCs = CeduData.dir_residencia.toString();
+    var TrabajoCs = CeduData.dir_trabajo.toString();
+    var PreResultadoCs = CeduData.resultado.toString();
+    if (PreResultadoCs == "0") {
+      var ResultadoCs = "Positivo"
+    } else if (PreResultadoCs == "1") {
+      var ResultadoCs = "Negativo"
+    }
+    var FExaCs = CeduData.fecha_examen.toString();
 
     io.emit('infocase', {
       CodigoCs: CodigoCs,
@@ -276,8 +319,14 @@ app.post('/consulta1', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE cedula = ('" + cstcedu + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    var CeduData2 = JSON.parse(JSON.stringify(rows))
-    var EstadoCs = Object.values(CeduData2[2])
+    if (rows.length != 0) {
+      var CeduData2 = JSON.parse(JSON.stringify(rows[0]))
+      var EstadoCs = CeduData2.estado.toString()
+    } else {
+      var EstadoCs = "-";
+    }
+    var CeduData2 = JSON.parse(JSON.stringify(rows[0]))
+    var EstadoCs = CeduData2.estado.toString()
 
     io.emit('estadocaso', {
       EstadoCs: EstadoCs,
@@ -285,7 +334,11 @@ app.post('/consulta1', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE cedula = ('" + cstcedu + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    io.emit('histcaso', rows);
+    if (rows.length != 0) {
+      io.emit('histcaso', rows);
+    } else {
+      io.emit('histcaso', "No se encontró información previa");
+    }
   });
 });
 
@@ -296,16 +349,26 @@ app.post('/consulta2', function (req, res) {
   var cstcodigo = consult.ctcodigo;
   con.query("SELECT * FROM registro_pacientes WHERE idcaso = ('" + cstcodigo + "') ;", function (err, rows) {
     if (err) throw err;
-    var CodeData = JSON.parse(JSON.stringify(rows))
-    var CodigoCs = Object.values(CodeData[0])
-    var CedulaCs = Object.values(CodeData[1])
-    var NombreCs = Object.values(CodeData[2])
-    var ApellidoCs = Object.values(CodeData[3])
-    var SexoCs = Object.values(CodeData[4])
-    var ResidenciaCs = Object.values(CodeData[5])
-    var TrabajoCs = Object.values(CodeData[6])
-    var ResultadoCs = Object.values(CodeData[7])
-    var FExaCs = Object.values(CodeData[8])
+    var CeduData = JSON.parse(JSON.stringify(rows[0]))
+    var CodigoCs = CeduData.idcaso.toString();
+    var CedulaCs = CeduData.cedula.toString();
+    var NombreCs = CeduData.nombre.toString();
+    var ApellidoCs = CeduData.apellido.toString();
+    var PreSexoCs = CeduData.sexo.toString();
+    if (PreSexoCs == "0") {
+      var SexoCs = "Masculino"
+    } else if (PreSexoCs == "1") {
+      var SexoCs = "Femenino"
+    }
+    var ResidenciaCs = CeduData.dir_residencia.toString();
+    var TrabajoCs = CeduData.dir_trabajo.toString();
+    var PreResultadoCs = CeduData.resultado.toString();
+    if (PreResultadoCs == "0") {
+      var ResultadoCs = "Positivo"
+    } else if (PreResultadoCs == "1") {
+      var ResultadoCs = "Negativo"
+    }
+    var FExaCs = CeduData.fecha_examen.toString();
 
     io.emit('infocase', {
       CodigoCs: CodigoCs,
@@ -321,8 +384,12 @@ app.post('/consulta2', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE idcaso = ('" + cstcodigo + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    var CodeData2 = JSON.parse(JSON.stringify(rows))
-    var EstadoCs = Object.values(CodeData2[2])
+    if (rows.length != 0) {
+      var CodeData2 = JSON.parse(JSON.stringify(rows[0]))
+      var EstadoCs = CodeData2.estado.toString()
+    } else {
+      var EstadoCs = "-";
+    }
 
     io.emit('estadocaso', {
       EstadoCs: EstadoCs,
@@ -330,7 +397,11 @@ app.post('/consulta2', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE idcaso = ('" + cstcodigo + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    io.emit('histcaso', rows);
+    if (rows.length != 0) {
+      io.emit('histcaso', rows);
+    } else {
+      io.emit('histcaso', "No se encontró información previa");
+    }
   });
 });
 
@@ -342,16 +413,26 @@ app.post('/consulta3', function (req, res) {
   var cstapellido = consult.ctapellido;
   con.query("SELECT * FROM registro_pacientes WHERE nombre = ('" + cstnombre + "') AND apellido = ('" + cstapellido + "');", function (err, rows) {
     if (err) throw err;
-    var NameData = JSON.parse(JSON.stringify(rows))
-    var CodigoCs = Object.values(NameData[0])
-    var CedulaCs = Object.values(NameData[1])
-    var NombreCs = Object.values(NameData[2])
-    var ApellidoCs = Object.values(NameData[3])
-    var SexoCs = Object.values(NameData[4])
-    var ResidenciaCs = Object.values(NameData[5])
-    var TrabajoCs = Object.values(NameData[6])
-    var ResultadoCs = Object.values(NameData[7])
-    var FExaCs = Object.values(NameData[8])
+    var CeduData = JSON.parse(JSON.stringify(rows[0]))
+    var CodigoCs = CeduData.idcaso.toString();
+    var CedulaCs = CeduData.cedula.toString();
+    var NombreCs = CeduData.nombre.toString();
+    var ApellidoCs = CeduData.apellido.toString();
+    var PreSexoCs = CeduData.sexo.toString();
+    if (PreSexoCs == "0") {
+      var SexoCs = "Masculino"
+    } else if (PreSexoCs == "1") {
+      var SexoCs = "Femenino"
+    }
+    var ResidenciaCs = CeduData.dir_residencia.toString();
+    var TrabajoCs = CeduData.dir_trabajo.toString();
+    var PreResultadoCs = CeduData.resultado.toString();
+    if (PreResultadoCs == "0") {
+      var ResultadoCs = "Positivo"
+    } else if (PreResultadoCs == "1") {
+      var ResultadoCs = "Negativo"
+    }
+    var FExaCs = CeduData.fecha_examen.toString();
 
     io.emit('infocase', {
       CodigoCs: CodigoCs,
@@ -367,8 +448,12 @@ app.post('/consulta3', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE nombre = ('" + cstnombre + "') AND apellido = ('" + cstapellido + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    var NameData2 = JSON.parse(JSON.stringify(rows))
-    var EstadoCs = Object.values(NameData2[2])
+    if (rows.length != 0) {
+      var NameData2 = JSON.parse(JSON.stringify(rows[0]))
+      var EstadoCs = NameData2.estado.toString()
+    } else {
+      var EstadoCs = "-";
+    }
 
     io.emit('estadocaso', {
       EstadoCs: EstadoCs,
@@ -376,6 +461,10 @@ app.post('/consulta3', function (req, res) {
   });
   con.query("SELECT * FROM estado_pacientes WHERE nombre = ('" + cstnombre + "') AND apellido = ('" + cstapellido + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
-    io.emit('histcaso', rows);
+    if (rows.length != 0) {
+      io.emit('histcaso', rows);
+    } else {
+      io.emit('histcaso', "No se encontró información previa");
+    }
   });
 });
