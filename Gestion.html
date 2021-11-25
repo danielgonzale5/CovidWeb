@@ -114,7 +114,8 @@
   <script>
 
     var NV = false;
-    var NF = false;
+    var CV = false;
+    var IV = false;
     var opt;
 
     function PreConsultar() {
@@ -122,27 +123,18 @@
       var cnombre = document.getElementById('nombresc').value;
       var capellido = document.getElementById('apellidosc').value;
       var ccodigo = document.getElementById('codigoc').value;
-      if (ccedu != null) {
-        opt = 1;
-        Consultar(opt);
-      } else if (ccodigo != null) {
-        opt = 2;
-        Consultar(opt);
-      } else if (cnombre != null && capellido == null) {
+      if (ccedu != '') {
+        CheckCedula();
+      } else if (ccodigo != '') {
+        CheckCodigo();
+      } else if (cnombre != '' && capellido == '') {
         alert("Por favor ingrese el apellido")
         console.log("Falta el apellido")
-      } else if (cnombre == null && capellido != null) {
+      } else if (cnombre == '' && capellido != '') {
         alert("Por favor ingrese el nombre")
         console.log("Falta el nombre")
-      } else if (cnombre != null && capellido != null) {
-        CheckConsulta();
-        if (NV == true && NF == false) {
-          opt = 3;
-          Consultar(opt);
-        } else {
-          alert("Existe más de un usuario con el nombre igresado")
-          console.log("Increible")
-        }
+      } else if (cnombre != '' && capellido != '') {
+        CheckNombre();
       }
     }
 
@@ -159,18 +151,84 @@
       await fetch('/actestate', options);
     }
 
-    io().on('namechecked', function (NameChk) {
-      console.log('Verificación de nombres y apellidos');
-      if (NameChk.NameChecked == 1) {
-        NV = true;
-        NF = false;
+    io().on('cedulchecked', function (CdlaChk) {
+      console.log('Verificación de Cédula');
+      if (CdlaChk.CedulaCChecked.toString() == "0") {
+        IV = true;
       } else {
-        NV = false;
-        NF = true;
+        IV = false;
+      }
+      if (IV == true) {
+        IV == false;
+        opt = 1;
+        Consultar(opt);
+      } else {
+        alert("Esta Cédula no se encuentra registrada")
+        console.log("Increible")
       }
     });
 
-    async function CheckConsulta() {
+    io().on('codigchecked', function (CdgChk) {
+      console.log('Verificación de Código');
+      if (CdgChk.CodigoCChecked.toString() == "0") {
+        CV = true;
+      } else {
+        CV = false;
+      }
+      if (CV == true) {
+        CV == false;
+        opt = 2;
+        Consultar(opt);
+      } else {
+        alert("Este Código no se encuentra registrado")
+        console.log("Increible")
+      }
+    });
+
+    io().on('namechecked', function (NameChk) {
+      console.log('Verificación de nombres y apellidos');
+      if (NameChk.NameChecked.toString() == "0") {
+        NV = true;
+      } else {
+        NV = false;
+      }
+      if (NV == true) {
+        NV == false;
+        opt = 3;
+        Consultar(opt);
+      } else {
+        alert("Existe más de un usuario con el nombre igresado, ingrese más información")
+        console.log("Increible")
+      }
+    });
+
+    async function CheckCedula() {
+      var cedulac = document.getElementById('cedulac').value;
+      const info = { cedulac };
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(info)
+      };
+      await fetch('/cosltcheck1', options);
+    }
+
+    async function CheckCodigo() {
+      var codigoc = document.getElementById('codigoc').value;
+      const info = { codigoc };
+      const options = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(info)
+      };
+      await fetch('/cosltcheck2', options);
+    }
+
+    async function CheckNombre() {
       var nombrec = document.getElementById('nombresc').value;
       var apellidoc = document.getElementById('apellidosc').value;
       const info = { nombrec, apellidoc };
@@ -181,7 +239,7 @@
         },
         body: JSON.stringify(info)
       };
-      await fetch('/cosltcheck', options);
+      await fetch('/cosltcheck3', options);
     }
 
     io().on('infocase', function (InfCs) {
@@ -205,12 +263,12 @@
 
     io().on('histcaso', function (rows) {
       console.log('Historial del caso');
-      var html='';
-        for (var i=0; i<rows.length; i++) {
-          html += rows[i].firstname + ' ' + rows[i].lastname + '<br>';
-        }  
-        document.getElementById("table").innerHTML = html;
-        console.log(rows);
+      var html = '';
+      for (var i = 0; i < rows.length; i++) {
+        html += rows[i].firstname + ' ' + rows[i].lastname + '<br>';
+      }
+      document.getElementById("table").innerHTML = html;
+      console.log(rows);
     });
 
     async function Consultar(opt) {
