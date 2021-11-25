@@ -334,7 +334,7 @@ app.post('/consulta1', function (req, res) {
       EstadoCs: EstadoCs,
     });
   });
-  con.query("SELECT * FROM estado_pacientes WHERE cedula = ('" + cstcedu + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
+  con.query("SELECT * FROM estado_pacientes WHERE cedula = ('" + cstcedu + "') ORDER BY fecha_mod;", function (err, rows) {
     if (err) throw err;
     if (rows.length != 0) {
       io.emit('histcaso', rows);
@@ -399,7 +399,7 @@ app.post('/consulta2', function (req, res) {
       EstadoCs: EstadoCs,
     });
   });
-  con.query("SELECT * FROM estado_pacientes WHERE idcaso = ('" + cstcodigo + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
+  con.query("SELECT * FROM estado_pacientes WHERE idcaso = ('" + cstcodigo + "') ORDER BY fecha_mod;", function (err, rows) {
     if (err) throw err;
     if (rows.length != 0) {
       io.emit('histcaso', rows);
@@ -452,7 +452,9 @@ app.post('/consulta3', function (req, res) {
       FExaCs: FExaCs
     });
   });
-  con.query("SELECT * FROM estado_pacientes WHERE nombre = ('" + cstnombre + "') AND apellido = ('" + cstapellido + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
+  con.query("SELECT estado, fecha_mod FROM estado_pacientes AS epa, registro_pacientes AS rpa \
+              WHERE rpa.nombre = ('" + cstnombre + "') AND rpa.apellido = ('" + cstapellido + "') AND epa.cedula = rpa.cedula \
+              ORDER BY epa.fecha_mod DESC LIMIT 1;", function (err, rows) {
     if (err) throw err;
     if (rows.length != 0) {
       var NameData2 = JSON.parse(JSON.stringify(rows[0]))
@@ -465,7 +467,9 @@ app.post('/consulta3', function (req, res) {
       EstadoCs: EstadoCs,
     });
   });
-  con.query("SELECT * FROM estado_pacientes WHERE nombre = ('" + cstnombre + "') AND apellido = ('" + cstapellido + "') ORDER BY fecha_mod DESC LIMIT 1;", function (err, rows) {
+  con.query("SELECT estado, fecha_mod FROM estado_pacientes AS epa, registro_pacientes AS rpa \
+              WHERE rpa.nombre = ('" + cstnombre + "') AND rpa.apellido = ('" + cstapellido + "') AND epa.cedula = rpa.cedula \
+              ORDER BY epa.fecha_mod;", function (err, rows) {
     if (err) throw err;
     if (rows.length != 0) {
       io.emit('histcaso', rows);
