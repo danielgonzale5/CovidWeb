@@ -39,7 +39,7 @@
     </span>
     <h5></h5>
     <span>
-      <input class="botons" type="submit" onclick="PreConsultar()" value="Consultar">
+      <input class="botons" type="button" onclick="PreConsultar()" value="Consultar">
     </span>
   </section>
   <section class="form-register">
@@ -96,7 +96,7 @@
         <option value="" selected disabled hidden>Actualizar Estado</option>
         <option value="Sano">Sano</option>
         <option value="En Tratamiento Casa">En Tratamiento Casa</option>
-        <option value="En tratamiento Hospital">En tratamiento Hospital</option>
+        <option value="En Tratamiento Hospital">En Tratamiento Hospital</option>
         <option value="En UCI">En UCI</option>
         <option value="Curado">Curado</option>
         <option value="Muerte">Muerte</option>
@@ -107,7 +107,7 @@
       <input class="controls" type="date" id="fmod" name="fmod" value="2021-11-27" min="2000-01-01" max="2100-12-31">
     </span>
     <span>
-      <input class="botons" type="submit" onclick="CheckActualizar()" value="Actualizar">
+      <input class="botons" type="button" onclick="CheckActualizar()" value="Actualizar">
     </span>
   </section>
   <section class="form-register">
@@ -123,6 +123,7 @@
     var opt;
 
     function PreConsultar() {
+      console.log("consultando")
       var ccedu = document.getElementById('cedulac').value;
       var cnombre = document.getElementById('nombresc').value;
       var capellido = document.getElementById('apellidosc').value;
@@ -130,6 +131,7 @@
       if (ccedu != '') {
         CheckCedula();
       } else if (ccodigo != '') {
+        console.log("entre")
         CheckCodigo();
       } else if (cnombre != '' && capellido == '') {
         alert("Por favor ingrese el apellido")
@@ -143,18 +145,25 @@
     }
 
     function CheckActualizar() {
-      var actr = document.getElementById('codigo').value;
+      var actr = document.getElementById('estadoa').value;
       var codcnt = document.getElementById('codigo').innerText;
-      if (actr != "") {
+      var est = document.getElementById('estado').innerText;
+      console.log("Estado: ",est)
+      if (est == "MUERTE") {
+        alert("Este caso no permite más modificaciones")
+        console.log("El usuario esta muerto")
+        return
+      }
+      if (actr == "") {
+        alert("Por favor seleccione una actualización")
+        console.log("No se selecciono actualización")
+      } else {
         if (codcnt == "-") {
           alert("Por favor realice una consulta antes de actualizar")
           console.log("Falta el codigo: ", codcnt)
         } else {
           Actualizar();
         }
-      } else {
-        alert("Por favor seleccione una actualización")
-        console.log("No se selecciono actualización")
       }
     }
 
@@ -239,6 +248,7 @@
     }
 
     async function CheckCodigo() {
+      console.log("CheckCodigo")
       var codigoc = document.getElementById('codigoc').value;
       const info = { codigoc };
       const options = {
