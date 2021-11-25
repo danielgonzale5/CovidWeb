@@ -263,9 +263,27 @@
 
     io().on('histcaso', function (rows) {
       console.log('Historial del caso');
+      console.log(rows);
       var html = '';
-      for (var i = 0; i < rows.length; i++) {
-        html += rows[i].firstname + ' ' + rows[i].lastname + '<br>';
+      for (var i = 0; i < rows.length + 1; i++) {
+        if (i == 0) {
+          html += 'ESTADO' + ' ' + 'FECHA MODIFICACIÓN' + '<br>';
+        } else {
+          if (rows[i - 1].estado == "1") {
+            var state = "En Tratamiento Hospital";
+          } else if (rows[i - 1].estado == "2") {
+            var state = "En UCI";
+          } else if (rows[i - 1].estado == "3") {
+            var state = "Curado";
+          } else if (rows[i - 1].estado == "4") {
+            var state = "Muerte";
+          } else if (rows[i - 1].estado == "5") {
+            var state = "Sano";
+          } else if (rows[i - 1].estado == "6") {
+            var state = "En Tratamiento Casa";
+          }
+          html += state + ' ' + rows[i - 1].fechamod.split('T', 1)[0] + '<br>';
+        }
       }
       document.getElementById("table").innerHTML = html;
       console.log(rows);
