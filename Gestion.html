@@ -104,8 +104,7 @@
     </span>
     <span>
       <h5>Fecha de Modificación</h5>
-      <input class="controls" type="date" id="fmod" name="fmod" value="2021-11-27" min="2000-01-01"
-      max="2100-12-31">
+      <input class="controls" type="date" id="fmod" name="fmod" value="2021-11-27" min="2000-01-01" max="2100-12-31">
     </span>
     <span>
       <input class="botons" type="submit" onclick="CheckActualizar()" value="Actualizar">
@@ -144,12 +143,18 @@
     }
 
     function CheckActualizar() {
-      var codcnt = document.getElementById('codigo').textContent;
-      if (codcnt =! " - ") {
-        Actualizar();
+      var actr = document.getElementById('codigo').value;
+      var codcnt = document.getElementById('codigo').innerText;
+      if (actr != "") {
+        if (codcnt == "-") {
+          alert("Por favor realice una consulta antes de actualizar")
+          console.log("Falta el codigo: ", codcnt)
+        } else {
+          Actualizar();
+        }
       } else {
-        alert("Por favor realice una consulta antes de actualizar")
-        console.log("Falta el codigo: ", codcnt)
+        alert("Por favor seleccione una actualización")
+        console.log("No se selecciono actualización")
       }
     }
 
@@ -285,7 +290,8 @@
       var html = '';
       for (var i = 0; i < rows.length + 1; i++) {
         if (i == 0) {
-          html += 'ESTADO' + ' ' + 'FECHA MODIFICACIÓN' + '<br>';
+          html += 'ESTADO' + '  :  ' + 'FECHA MODIFICACIÓN' + '<br>';
+          html += '<br>';
         } else {
           if (rows[i - 1].estado == "1") {
             var state = "En Tratamiento Hospital";
@@ -301,7 +307,7 @@
             var state = "En Tratamiento Casa";
           }
           fechamod = rows[i - 1].fecha_mod;
-          html += state + ' ' + fechamod.split('T', 1)[0] + '<br>';
+          html += state + '  :  ' + fechamod.split('T', 1)[0] + '<br>';
         }
       }
       document.getElementById("table").innerHTML = html;
