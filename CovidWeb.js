@@ -515,3 +515,31 @@ app.post('/consulta3', function (req, res) {
     }
   });
 });
+app.post('/actestate', function (req, res) {
+  console.log("Registrando Actualización")
+  console.log(req.body);
+  var AcData = req.body;
+  var PSta = AcData.actestado.toString();
+  if (PSta == "En Tratamiento Hospital") {
+    var Sta = 1;
+  } else if (PSta == "En UCI") {
+    var Sta = 2;
+  } else if (PSta == "Curado") {
+    var Sta = 3;
+  } else if (PSta == "Muerte") {
+    var Sta = 4;
+  } else if (PSta == "Sano") {
+    var Sta = 5;
+  } else if (PSta == "En Tratamiento Casa") {
+    var Sta = 6;
+  }
+  var Acd = parseFloat(AcData.actcedu);
+  var Acg = parseInt(AcData.actcode);
+  var Afm = AcData.actfemod.toString();
+  var Imysql = "INSERT INTO estado_pacientes (cedula, idcaso, estado, fecha_mod) VALUES ?";
+  var values = [[Acd, Acg, Sta, Afm]];
+  con.query(Imysql, [values], function (err, result) {
+    if (err) throw err;
+    console.log("Registro Insertado: " + result.affectedRows);
+  });
+});
