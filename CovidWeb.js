@@ -323,12 +323,23 @@ app.post('/consulta1', function (req, res) {
     if (err) throw err;
     if (rows.length != 0) {
       var CeduData2 = JSON.parse(JSON.stringify(rows[0]))
-      var EstadoCs = CeduData2.estado.toString()
+      var Estado = CeduData2.estado.toString()
+      if (Estado == "1") {
+        var EstadoCs = "En Tratamiento Hospital";
+      } else if (Estado == "2") {
+        var EstadoCs = "En UCI";
+      } else if (Estado == "3") {
+        var EstadoCs = "Curado";
+      } else if (Estado == "4") {
+        var EstadoCs = "Muerte";
+      } else if (Estado == "5") {
+        var EstadoCs = "Sano";
+      } else if (Estado == "6") {
+        var EstadoCs = "En Tratamiento Casa";
+      }
     } else {
       var EstadoCs = "-";
     }
-    var CeduData2 = JSON.parse(JSON.stringify(rows[0]))
-    var EstadoCs = CeduData2.estado.toString()
 
     io.emit('estadocaso', {
       EstadoCs: EstadoCs,
@@ -390,7 +401,20 @@ app.post('/consulta2', function (req, res) {
     if (err) throw err;
     if (rows.length != 0) {
       var CodeData2 = JSON.parse(JSON.stringify(rows[0]))
-      var EstadoCs = CodeData2.estado.toString()
+      var Estado = CodeData2.estado.toString()
+      if (Estado == "1") {
+        var EstadoCs = "En Tratamiento Hospital";
+      } else if (Estado == "2") {
+        var EstadoCs = "En UCI";
+      } else if (Estado == "3") {
+        var EstadoCs = "Curado";
+      } else if (Estado == "4") {
+        var EstadoCs = "Muerte";
+      } else if (Estado == "5") {
+        var EstadoCs = "Sano";
+      } else if (Estado == "6") {
+        var EstadoCs = "En Tratamiento Casa";
+      }
     } else {
       var EstadoCs = "-";
     }
@@ -458,7 +482,20 @@ app.post('/consulta3', function (req, res) {
     if (err) throw err;
     if (rows.length != 0) {
       var NameData2 = JSON.parse(JSON.stringify(rows[0]))
-      var EstadoCs = NameData2.estado.toString()
+      var Estado = NameData2.estado.toString()
+      if (Estado == "1") {
+        var EstadoCs = "En Tratamiento Hospital";
+      } else if (Estado == "2") {
+        var EstadoCs = "En UCI";
+      } else if (Estado == "3") {
+        var EstadoCs = "Curado";
+      } else if (Estado == "4") {
+        var EstadoCs = "Muerte";
+      } else if (Estado == "5") {
+        var EstadoCs = "Sano";
+      } else if (Estado == "6") {
+        var EstadoCs = "En Tratamiento Casa";
+      }
     } else {
       var EstadoCs = "-";
     }
