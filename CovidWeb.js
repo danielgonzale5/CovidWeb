@@ -295,6 +295,7 @@ app.post('/consulta1', function (req, res) {
     } else if (PreSexoCs == "1") {
       var SexoCs = "Femenino"
     }
+    var NacimientoCs = CeduData.fecha_nacimiento.split('T', 1)[0];
     var ResidenciaCs = CeduData.dir_residencia.toString();
     var TrabajoCs = CeduData.dir_trabajo.toString();
     var PreResultadoCs = CeduData.resultado.toString();
@@ -303,7 +304,7 @@ app.post('/consulta1', function (req, res) {
     } else if (PreResultadoCs == "1") {
       var ResultadoCs = "Negativo"
     }
-    var FExaCs = CeduData.fecha_examen.toString();
+    var FExaCs = CeduData.fecha_examen.split('T', 1)[0];
 
     io.emit('infocase', {
       CodigoCs: CodigoCs,
@@ -311,6 +312,7 @@ app.post('/consulta1', function (req, res) {
       NombreCs: NombreCs,
       ApellidoCs: ApellidoCs,
       SexoCs: SexoCs,
+      NacimientoCs: NacimientoCs,
       ResidenciaCs: ResidenciaCs,
       TrabajoCs: TrabajoCs,
       ResultadoCs: ResultadoCs,
@@ -360,6 +362,7 @@ app.post('/consulta2', function (req, res) {
     } else if (PreSexoCs == "1") {
       var SexoCs = "Femenino"
     }
+    var NacimientoCs = CeduData.fecha_nacimiento.split('T', 1)[0];
     var ResidenciaCs = CeduData.dir_residencia.toString();
     var TrabajoCs = CeduData.dir_trabajo.toString();
     var PreResultadoCs = CeduData.resultado.toString();
@@ -368,7 +371,7 @@ app.post('/consulta2', function (req, res) {
     } else if (PreResultadoCs == "1") {
       var ResultadoCs = "Negativo"
     }
-    var FExaCs = CeduData.fecha_examen.toString();
+    var FExaCs = CeduData.fecha_examen.split('T', 1)[0];
 
     io.emit('infocase', {
       CodigoCs: CodigoCs,
@@ -376,6 +379,7 @@ app.post('/consulta2', function (req, res) {
       NombreCs: NombreCs,
       ApellidoCs: ApellidoCs,
       SexoCs: SexoCs,
+      NacimientoCs: NacimientoCs,
       ResidenciaCs: ResidenciaCs,
       TrabajoCs: TrabajoCs,
       ResultadoCs: ResultadoCs,
@@ -424,6 +428,7 @@ app.post('/consulta3', function (req, res) {
     } else if (PreSexoCs == "1") {
       var SexoCs = "Femenino"
     }
+    var NacimientoCs = CeduData.fecha_nacimiento.split('T', 1)[0];
     var ResidenciaCs = CeduData.dir_residencia.toString();
     var TrabajoCs = CeduData.dir_trabajo.toString();
     var PreResultadoCs = CeduData.resultado.toString();
@@ -432,7 +437,7 @@ app.post('/consulta3', function (req, res) {
     } else if (PreResultadoCs == "1") {
       var ResultadoCs = "Negativo"
     }
-    var FExaCs = CeduData.fecha_examen.toString();
+    var FExaCs = CeduData.fecha_examen.split('T', 1)[0];
 
     io.emit('infocase', {
       CodigoCs: CodigoCs,
@@ -440,6 +445,7 @@ app.post('/consulta3', function (req, res) {
       NombreCs: NombreCs,
       ApellidoCs: ApellidoCs,
       SexoCs: SexoCs,
+      NacimientoCs: NacimientoCs,
       ResidenciaCs: ResidenciaCs,
       TrabajoCs: TrabajoCs,
       ResultadoCs: ResultadoCs,

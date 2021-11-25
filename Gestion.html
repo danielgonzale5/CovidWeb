@@ -62,7 +62,7 @@
     </span>
     <span>
       <h5>Fecha de nacimiento</h5>
-      <label class="controls" type="text" id="nacimiento" name="nacimiento"> - </label>
+      <label class="controls" type="date" id="nacimiento" name="nacimiento"> - </label>
     </span>
     <span>
       <h5>Dirección de Residencia</h5>
@@ -78,7 +78,7 @@
     </span>
     <span>
       <h5>Fecha del exámen</h5>
-      <label class="controls" type="text" id="fechaexa" name="fechaexa"> - </label>
+      <label class="controls" type="date" id="fechaexa" name="fechaexa"> - </label>
     </span>
     <span>
       <h5>Código del Caso</h5>
@@ -153,7 +153,7 @@
 
     io().on('cedulchecked', function (CdlaChk) {
       console.log('Verificación de Cédula');
-      if (CdlaChk.CedulaCChecked.toString() == "0") {
+      if (CdlaChk.CedulaCChecked.toString() == "1") {
         IV = true;
       } else {
         IV = false;
@@ -170,7 +170,7 @@
 
     io().on('codigchecked', function (CdgChk) {
       console.log('Verificación de Código');
-      if (CdgChk.CodigoCChecked.toString() == "0") {
+      if (CdgChk.CodigoCChecked.toString() == "1") {
         CV = true;
       } else {
         CV = false;
@@ -187,7 +187,7 @@
 
     io().on('namechecked', function (NameChk) {
       console.log('Verificación de nombres y apellidos');
-      if (NameChk.NameChecked.toString() == "0") {
+      if (NameChk.NameChecked.toString() == "1") {
         NV = true;
       } else {
         NV = false;
@@ -252,7 +252,7 @@
       document.getElementById("dirres").innerHTML = InfCs.ResidenciaCs;
       document.getElementById("dirtra").innerHTML = InfCs.TrabajoCs;
       document.getElementById("resultado").innerHTML = InfCs.ResultadoCs;
-      document.getElementById("fechaexa").innerHTML = InfCs.FExamenCs;
+      document.getElementById("fechaexa").innerHTML = InfCs.FExaCs;
       document.getElementById("codigo").innerHTML = InfCs.CodigoCs;
     });
 
