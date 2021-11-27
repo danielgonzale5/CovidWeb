@@ -223,7 +223,7 @@ app.post('/rcedinfo', function (req, res) {
 });
 
 app.post('/cosltcheck1', function (req, res) {
-  console.log("Chequeando nombre")
+  console.log("Chequeando cedula")
   console.log(req.body);
   var cedulcheck = req.body;
   var cedulachk = cedulcheck.cedulac.toString();
@@ -542,4 +542,72 @@ app.post('/actestate', function (req, res) {
     if (err) throw err;
     console.log("Registro Insertado: " + result.affectedRows);
   });
+
+
+
+});
+
+app.post('/Mapdraw1',(req,err)=>{
+  console.log('Cargando búsqueda')
+  console.log(req.body)
+  ctcedu=req.body.cedulac;
+  
+  con.query("select rp.cedula, rp.dir_residencia, rp.dir_trabajo, r.resultados "+
+  "from registro_pacientes as rp, resultados r "+
+  "where rp.resultado=r.idresultados and cedula = ('"+ctcedu+"')",(err,rows)=>{
+    if (err) throw err;
+    io.emit('mapa',rows)
+
+  })
+
+  con.query("SELECT r.resultados, rp.fecha_examen FROM registro_pacientes as rp, resultados r WHERE rp.cedula = ('" + ctcedu + "')and rp.resultado=r.idresultados ORDER BY fecha_examen;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('examen', rows);
+    } else {
+      io.emit('examen', "No se encontró información previa");
+    }
+  })
+  con.query("SELECT * FROM estado_pacientes WHERE cedula = ('" + ctcedu + "') ORDER BY fecha_mod;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('histcaso2', rows);
+    } else {
+      io.emit('histcaso2', "No se encontró información previa");
+    }
+  })
+  
+
+});
+
+app.post('/Mapdraw2',(req,err)=>{
+  console.log('Cargando búsqueda')
+  console.log(req.body)
+  ctcodigo=req.body.codigoc;
+  
+  con.query("select rp.idcaso, rp.dir_residencia, rp.dir_trabajo, r.resultados "+
+  "from registro_pacientes as rp, resultados r "+
+  "where rp.resultado=r.idresultados and idcaso = ('"+ctcodigo+"')",(err,rows)=>{
+    if (err) throw err;
+    io.emit('mapa',rows)
+
+  })
+  con.query("SELECT r.resultados, rp.fecha_examen FROM registro_pacientes as rp, resultados r WHERE rp.idcaso = ('" + ctcodigo + "')and rp.resultado=r.idresultados ORDER BY fecha_examen;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('examen', rows);
+    } else {
+      io.emit('examen', "No se encontró información previa");
+    }
+  })
+  con.query("SELECT * FROM estado_pacientes WHERE idcaso = ('" + ctcodigo + "') ORDER BY fecha_mod;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('histcaso2', rows);
+    } else {
+      io.emit('histcaso2', "No se encontró información previa");
+    }
+  })
+  
+
 });

@@ -297,7 +297,7 @@
     io().on('histcaso', function (rows) {
       console.log('Historial del caso');
       console.log(rows);
-      var html = '';
+      var html = '<p>';
       for (var i = 0; i < rows.length + 1; i++) {
         if (i == 0) {
           html += 'ESTADO' + '  :  ' + 'FECHA MODIFICACIÓN' + '<br>';
@@ -320,6 +320,7 @@
           html += state + '  :  ' + fechamod.split('T', 1)[0] + '<br>';
         }
       }
+      html+="</p>"
       document.getElementById("table").innerHTML = html;
     });
 

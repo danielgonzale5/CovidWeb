@@ -13,12 +13,31 @@
   <div class="topnav">
     <a href="/" class="logout">Log out</a>
     <a href="/PrincipalPageMedico">Principal</a>
-    <a href="/Busqueda">Busqueda</a>
+    <a href="/Busqueda">Búsqueda</a>
     <a class="active">Mapa General</a>
     <div class="welcome">
         <h1>¡Bienvenido!</h1>
     </div>
   </div>
+  <section class="form-register">
+    <div class="map" id="map"></div>
+  </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+    <script 
+  async
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjxpJcSdf7dnbP8rj6bPFku1uFUHgNwco&callback=initMap&v=weekly"
+      ></script>
 </body>
+
+<script>
+function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 8,
+      });
+    }
+
+</script>
 
 </html>
