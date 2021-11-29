@@ -49,3 +49,35 @@ body{
   font-size: 8px;
   color:#fff;
 }
+.form-register {
+  text-align: center;
+  width: 80%;
+  background: #2196F3;
+  padding: 15px;
+  margin: auto;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  border-radius: 4px;
+  font-family: 'calibri';
+  color: #fff;
+  box-shadow: 7px 13px 37px #000;
+}
+
+.form-register h4 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.form-register h5 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.form-register span {
+  display: inline-block;
+  width: auto;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  margin-left: 20px;
+  margin-right: 20px;
+}

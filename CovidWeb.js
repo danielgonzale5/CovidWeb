@@ -628,12 +628,21 @@ app.post('/resumen', ()=>{
     "WHEN numero=6 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()-6) "+
     "END AS num_pacientes, CASE WHEN numero=0 THEN curdate() WHEN numero=1 THEN curdate()-1 WHEN numero=2 THEN curdate()-2 "+
     "WHEN numero=3 THEN curdate()-3 WHEN numero=4 THEN curdate()-4 WHEN numero=5 THEN curdate()-5 WHEN numero=6 THEN curdate()-6 "+
-    "END AS fechacom FROM conteo",(err,rows)=>{
+    "END AS fechacom FROM conteo order by numero desc",(err,rows)=>{
     if (err) throw err;
     io.emit('resum',rows)
   })
-
-
+  con.query("SELECT   ep.estado, count(ep.estado) as cantidad FROM estado_pacientes as ep, registro_pacientes as rp "+ 
+  "where ep.idregistro_estado in (select max(idregistro_estado) FROM estado_pacientes group by idcaso) "+ 
+  "and ep.idcaso=rp.idcaso group by ep.estado order by ep.estado desc",(err,rows)=>{
+    if (err) throw err;
+    io.emit('info',rows)
+  })
+  con.query("SELECT r.resultados, count(rp.resultado) as cantidad  FROM registro_pacientes as rp, "+ 
+  "resultados r where r.idresultados=rp.resultado group by rp.resultado",(err,rows)=>{
+    if (err) throw err;
+    io.emit('resultados',rows)
+  })
 });
 
 app.post('/general_map',(req,err)=>{
