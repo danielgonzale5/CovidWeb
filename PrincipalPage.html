@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CovidWeb Home</title>
   <link rel="stylesheet" href="PrincipalPage.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 </head>
 
 <body>
@@ -14,16 +16,25 @@
     <a class="active">Principal</a>
     <div class="login-container">
       <form>
-        <input type="text" placeholder="Username" name="username" id="username">
-        <input style="margin-right:5px" type="password" placeholder="Password" name="psw" id="password">
-        <button type="button" onclick="check()">Login</button>
+        <input style="margin-right:5px" type="text" placeholder="Usuario" name="username" id="username">
+        <input style="margin-right:5px" type="password" placeholder="Contraseña" name="psw" id="password">
+        <button type="button" onclick="check()"><logintxt>Ingresar</logintxt></button>
       </form>
     </div>
   </div>
+  <section class="form-register">
+  <h4>Últimos 7 días</h4>
+  <canvas id="Grafica" style="height:40vh; width:80vw"></canvas>
+  </section>
+
+  <section class="form-register">
+    <h4>Información de registros</h4>
+    <canvas id="Grafica2" style="height:40vh; width:80vw"></canvas>
+    </section>
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
+  
   async function check() {
     user = document.getElementById('username').value;
     pass = document.getElementById('password').value;
@@ -52,6 +63,66 @@
           console.log("Usuario y Contraseña no coincidieron en base de datos")
       }
     });
+    datos()
+    async function datos(){
+    const options={
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    }
+                    
+                  };
+
+     await fetch('/resumen', options)}
+    var dia=[]
+    var number=[]
+    var fecha=[]
+    let miCanvas=document.getElementById("Grafica").getContext("2d");
+    io().on('resum', function (rows) {
+      dia=[]
+      number=[]
+      fecha=[]
+      rows.forEach((wl)=>{dia=[...dia,wl.día]})
+      rows.forEach((wl)=>{number=[...number,wl.num_pacientes]})
+      rows.forEach((wl)=>{fecha=[...fecha,wl.fechacom]})
+
+      console.log(fecha)
+      
+      Chart.defaults.global.defaultFontColor = "#fff";
+
+      var chart = new Chart(miCanvas,{ type: 'bar',
+      data: {
+          labels: dia,
+          datasets: [{
+              label: "Cantidad de pacientes registrados",
+              data: number,
+              backgroundColor: 'rgba(47, 58, 74, 0.4)',
+              borderColor: 'rgba(47, 58, 74, 1)',
+              borderWidth: 2
+          }]
+      },
+      options: {
+        
+        color: '#fff',
+        responsive: true,
+        aspectRatio: 4,
+        maintainAspectRatio: true,
+        scales: {
+          xAxes: [{gridLines: { color: 'rgba(0,0,0,0.1)' }}],
+          yAxes: [{gridLines: { color: 'rgba(0,0,0,0.1)' }}],
+          
+        },
+        animation: false,
+        legend:{
+          labels:{
+            fontColor: '#fff'
+          }
+        }
+      }
+})
+    });
+
+ 
 
 </script>
 
