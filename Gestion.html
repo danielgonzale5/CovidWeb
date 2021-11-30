@@ -297,6 +297,7 @@
     io().on('histcaso', function (rows) {
       console.log('Historial del caso');
       console.log(rows);
+
       var html = '<table cellpadding="7" rules="all">';
       for (var i = 0; i < rows.length + 1; i++) {
         if (i == 0) {
@@ -313,11 +314,11 @@
           } else if (rows[i - 1].estado == "3") {
             var state = "Curado";
           } else if (rows[i - 1].estado == "4") {
-            var state = "Muerte";
+            var state = "En Tratamiento Casa";
           } else if (rows[i - 1].estado == "5") {
             var state = "Sano";
           } else if (rows[i - 1].estado == "6") {
-            var state = "En Tratamiento Casa";
+            var state = "Muerte";
           }
           fechamod = rows[i - 1].fecha_mod;
           date = fechamod.split('T', 1)[0];

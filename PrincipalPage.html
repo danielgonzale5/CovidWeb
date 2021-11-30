@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CovidWeb Home</title>
   <link rel="stylesheet" href="PrincipalPage.css">
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 </head>
 
@@ -18,13 +17,12 @@
       <form>
         <input style="margin-right:5px" type="text" placeholder="Usuario" name="username" id="username">
         <input style="margin-right:5px" type="password" placeholder="Contraseña" name="psw" id="password">
-        <button type="button" onclick="check()">
-          <logintxt>Ingresar</logintxt>
-        </button>
+        <button type="button" onclick="check()"><logintxt>Ingresar</logintxt></button>
       </form>
     </div>
   </div>
   <section class="form-register">
+
     <h4>Últimos 7 días</h4>
     <canvas id="Grafica" style="height:40vh; width:80vw"></canvas>
   </section>
@@ -146,6 +144,7 @@
   });
 
 
+
   var infectados = 0
   var muertos = 0
   var curados = 0
@@ -187,7 +186,6 @@
           }
 
         }
-
       }
     }
     Chart.defaults.global.defaultFontColor = "#fff";
@@ -263,6 +261,7 @@
       }
     }
 
+
     var chart = new Chart(miCanvas4, {
       type: 'pie',
       data: {
@@ -289,7 +288,6 @@
     })
 
   });
-
 
 </script>
 
