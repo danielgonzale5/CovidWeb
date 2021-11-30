@@ -41,10 +41,7 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
-  var Log = 0;
-
   async function check() {
-    Log = 1;
     user = document.getElementById('username').value;
     pass = document.getElementById('password').value;
     const info = { user, pass };
@@ -62,20 +59,11 @@
     console.log('Validación de Usuario y Contraseña');
     console.log(VUsu.RolUsu.toString())
     if (VUsu.RolUsu.toString() == "3") {
-      if (Log = 1) {
-        Log = 0;
         location.href = '/PrincipalPageAdmin'
-      }
     } else if (VUsu.RolUsu.toString() == "2") {
-      if (Log = 1) {
-        Log = 0;
         location.href = '/PrincipalPageAyudante'
-      }
     } else if (VUsu.RolUsu.toString() == "1") {
-      if (Log = 1) {
-        Log = 0;
         location.href = '/PrincipalPageMedico'
-      }
     } else {
       alert("El Usuario o la Contraseña no existen o son incorrectos")
       console.log("Usuario y Contraseña no coincidieron en base de datos")
