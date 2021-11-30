@@ -1,4 +1,4 @@
-//Inicialización de Variables Globales y definición de librerías importantes.
+//Inicialización de Variables Globales y definición de librerías importantes
 const express = require('express');
 var app = require('express')();
 var server = require('http').createServer(app);
@@ -223,7 +223,7 @@ app.post('/rcedinfo', function (req, res) {
 });
 
 app.post('/cosltcheck1', function (req, res) {
-  console.log("Chequeando nombre")
+  console.log("Chequeando cedula")
   console.log(req.body);
   var cedulcheck = req.body;
   var cedulachk = cedulcheck.cedulac.toString();
@@ -330,11 +330,11 @@ app.post('/consulta1', function (req, res) {
         var EstadoCs = "En UCI";
       } else if (Estado == "3") {
         var EstadoCs = "Curado";
-      } else if (Estado == "4") {
+      } else if (Estado == "6") {
         var EstadoCs = "Muerte";
       } else if (Estado == "5") {
         var EstadoCs = "Sano";
-      } else if (Estado == "6") {
+      } else if (Estado == "4") {
         var EstadoCs = "En Tratamiento Casa";
       }
     } else {
@@ -408,11 +408,11 @@ app.post('/consulta2', function (req, res) {
         var EstadoCs = "En UCI";
       } else if (Estado == "3") {
         var EstadoCs = "Curado";
-      } else if (Estado == "4") {
+      } else if (Estado == "6") {
         var EstadoCs = "Muerte";
       } else if (Estado == "5") {
         var EstadoCs = "Sano";
-      } else if (Estado == "6") {
+      } else if (Estado == "4") {
         var EstadoCs = "En Tratamiento Casa";
       }
     } else {
@@ -489,11 +489,11 @@ app.post('/consulta3', function (req, res) {
         var EstadoCs = "En UCI";
       } else if (Estado == "3") {
         var EstadoCs = "Curado";
-      } else if (Estado == "4") {
+      } else if (Estado == "6") {
         var EstadoCs = "Muerte";
       } else if (Estado == "5") {
         var EstadoCs = "Sano";
-      } else if (Estado == "6") {
+      } else if (Estado == "4") {
         var EstadoCs = "En Tratamiento Casa";
       }
     } else {
@@ -527,11 +527,11 @@ app.post('/actestate', function (req, res) {
   } else if (PSta == "Curado") {
     var Sta = 3;
   } else if (PSta == "Muerte") {
-    var Sta = 4;
+    var Sta = 6;
   } else if (PSta == "Sano") {
     var Sta = 5;
   } else if (PSta == "En Tratamiento Casa") {
-    var Sta = 6;
+    var Sta = 4;
   }
   var Acd = parseFloat(AcData.actcedu);
   var Acg = parseInt(AcData.actcode);
@@ -542,4 +542,123 @@ app.post('/actestate', function (req, res) {
     if (err) throw err;
     console.log("Registro Insertado: " + result.affectedRows);
   });
+
+
+
+});
+
+app.post('/Mapdraw1',(req,err)=>{
+  console.log('Cargando búsqueda')
+  console.log(req.body)
+  ctcedu=req.body.cedulac;
+  
+  con.query("select rp.cedula, rp.dir_residencia, rp.dir_trabajo, r.resultados "+
+  "from registro_pacientes as rp, resultados r "+
+  "where rp.resultado=r.idresultados and cedula = ('"+ctcedu+"')",(err,rows)=>{
+    if (err) throw err;
+    io.emit('mapa',rows)
+
+  })
+
+  con.query("SELECT r.resultados, rp.fecha_examen FROM registro_pacientes as rp, resultados r WHERE rp.cedula = ('" + ctcedu + "')and rp.resultado=r.idresultados ORDER BY fecha_examen;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('examen', rows);
+    } else {
+      io.emit('examen', "No se encontró información previa");
+    }
+  })
+  con.query("SELECT * FROM estado_pacientes WHERE cedula = ('" + ctcedu + "') ORDER BY fecha_mod;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('histcaso2', rows);
+    } else {
+      io.emit('histcaso2', "No se encontró información previa");
+    }
+  })
+  
+
+});
+
+app.post('/Mapdraw2',(req,err)=>{
+  console.log('Cargando búsqueda')
+  console.log(req.body)
+  ctcodigo=req.body.codigoc;
+  
+  con.query("select rp.idcaso, rp.dir_residencia, rp.dir_trabajo, r.resultados "+
+  "from registro_pacientes as rp, resultados r "+
+  "where rp.resultado=r.idresultados and idcaso = ('"+ctcodigo+"')",(err,rows)=>{
+    if (err) throw err;
+    io.emit('mapa',rows)
+
+  })
+  con.query("SELECT r.resultados, rp.fecha_examen FROM registro_pacientes as rp, resultados r WHERE rp.idcaso = ('" + ctcodigo + "')and rp.resultado=r.idresultados ORDER BY fecha_examen;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('examen', rows);
+    } else {
+      io.emit('examen', "No se encontró información previa");
+    }
+  })
+  con.query("SELECT * FROM estado_pacientes WHERE idcaso = ('" + ctcodigo + "') ORDER BY fecha_mod;",(err, rows)=> {
+    if (err) throw err;
+    if (rows.length != 0) {
+      io.emit('histcaso2', rows);
+    } else {
+      io.emit('histcaso2', "No se encontró información previa");
+    }
+  })
+  
+
+});
+
+app.post('/resumen', ()=>{
+
+  con.query("SELECT CASE "+
+    "WHEN numero=0 THEN date_format(curdate(), "+"'%a'"+") WHEN numero=1 THEN date_format(curdate()-1, "+"'%a'"+") "+
+    "WHEN numero=2 THEN date_format(curdate()-2, "+"'%a'"+") WHEN numero=3 THEN date_format(curdate()-3, "+"'%a'"+") "+
+    "WHEN numero=4 THEN date_format(curdate()-4, "+"'%a'"+") WHEN numero=5 THEN date_format(curdate()-5, "+"'%a'"+") "+
+    "WHEN numero=6 THEN date_format(curdate()-6, "+"'%a'"+") END AS día, CASE "+
+    "WHEN numero=0 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()) "+
+    "WHEN numero=1 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()-1) "+
+    "WHEN numero=2 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()-2) "+
+    "WHEN numero=3 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()-3) "+
+    "WHEN numero=4 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()-4) "+
+    "WHEN numero=5 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()-5) "+
+    "WHEN numero=6 THEN (SELECT COUNT(cedula) FROM registro_pacientes WHERE fecha_examen=current_date()-6) "+
+    "END AS num_pacientes, CASE WHEN numero=0 THEN curdate() WHEN numero=1 THEN curdate()-1 WHEN numero=2 THEN curdate()-2 "+
+    "WHEN numero=3 THEN curdate()-3 WHEN numero=4 THEN curdate()-4 WHEN numero=5 THEN curdate()-5 WHEN numero=6 THEN curdate()-6 "+
+    "END AS fechacom FROM conteo order by numero desc",(err,rows)=>{
+    if (err) throw err;
+    io.emit('resum',rows)
+  })
+  con.query("SELECT   ep.estado, count(ep.estado) as cantidad FROM estado_pacientes as ep, registro_pacientes as rp "+ 
+  "where ep.idregistro_estado in (select max(idregistro_estado) FROM estado_pacientes group by idcaso) "+ 
+  "and ep.idcaso=rp.idcaso group by ep.estado order by ep.estado desc",(err,rows)=>{
+    if (err) throw err;
+    io.emit('info',rows)
+  })
+  con.query("SELECT r.resultados, count(rp.resultado) as cantidad  FROM registro_pacientes as rp, "+ 
+  "resultados r where r.idresultados=rp.resultado group by rp.resultado",(err,rows)=>{
+    if (err) throw err;
+    io.emit('resultados',rows)
+  })
+});
+
+app.post('/general_map',(req,err)=>{
+  con.query("SELECT  ep.idregistro_estado, ep.idcaso, ep.estado, rp.dir_residencia FROM estado_pacientes as ep, registro_pacientes as rp "+
+  "where ep.idregistro_estado in (select max(idregistro_estado) FROM estado_pacientes group by idcaso) and ep.idcaso=rp.idcaso "+
+  "order by idregistro_estado desc",(err,rows)=>{
+    if (err) throw err;
+    io.emit("pos",rows)
+  })
+  con.query("SELECT idcaso,cedula, resultado, dir_residencia FROM covidweb.registro_pacientes "+
+  "where resultado=0 and cedula  not in (select cedula from covidweb.estado_pacientes) "+
+  "group by cedula",(err,rows)=>{
+    if (err) throw err;
+    io.emit("neg",rows)
+  })
+
+
+
 });

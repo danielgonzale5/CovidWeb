@@ -2,23 +2,284 @@
 <html lang="en">
 
 <head>
+  
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Busqueda</title>
+  <title>Búsqueda</title>
   <link rel="stylesheet" href="Busqueda.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+   
+  
+  <!-- Load Esri Leaflet from CDN -->
+  <script src="https://unpkg.com/esri-leaflet@3.0.0/dist/esri-leaflet.js"></script>
+  <script src="https://unpkg.com/esri-leaflet-vector@3.0.0/dist/esri-leaflet-vector.js"></script>
+
+
+  <!-- Load Esri Leaflet Geocoder from CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder@3.0.0/dist/esri-leaflet-geocoder.css">
+  <script src="https://unpkg.com/esri-leaflet-geocoder@3.0.0/dist/esri-leaflet-geocoder.js"></script>
+
 </head>
 
 <body>
   <div class="topnav">
     <a href="/" class="logout">Log out</a>
     <a href="/PrincipalPageMedico">Principal</a>
-    <a class="active">Busqueda</a>
+    <a class="active">Búsqueda</a>
     <a href="/MapaGeneral">Mapa General</a>
     <div class="welcome">
         <h1>¡Bienvenido!</h1>
+
+      
+
+
     </div>
+
+    
   </div>
+  <section class="form-register">
+      <h4>Consultar Caso</h4>
+      <span>
+          <h5>Ingrese la Cédula</h5>
+          <input class="controls" type="number" name="cedulac" id="cedulac" placeholder="Cédula">
+      </span>
+      <span>
+          <input class="botons" type="button" onclick="CheckCedula()" value="Consultar">
+      </span>
+      <h5></h5>
+                Ó
+      <h5></h5>
+      <span>
+          <h5>Ingrese el Código de Caso</h5>
+          <input class="controls" type="number" name="codigoc" id="codigoc" placeholder="Código">
+      </span>
+      <span>
+          <input class="botons" type="button" onclick="CheckCaso()" value="Consultar">
+      </span>
+  </section>
+
+  <section class="form-register">
+    <h4>Historial</h4>
+    <span><h5>Historial de examenes</h5><div class="controls" name="table2" id="table2"></div></span>
+    <h5></h5>
+    <span><H5>Historial de estados</H5><div class="controls" name="table" id="table"></div></span>
+  </section>
+  
+    <section class="form-register">
+      <h4>Ubicación del paciente</h4>
+      <div  id="map"></div>
+
+    </section>
+    <script src="/socket.io/socket.io.js"></script>
+    
+   
 </body>
 
+
+<script>
+    var map = L.map('map').setView([10.9943595,-74.7935713,16], 13);
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1IjoiYmVsdHJhbmRhIiwiYSI6ImNrd2kzOHk0dzE0dTkycXFibjBoOHY2M3cifQ.aFfUKHJwLJ0W2CFJTPsqPQ'
+}).addTo(map);
+const apiKey = "AAPK869630e28dbe436297a16b4d99e6f455jRhpYc9MeP2REcf-VhWqO7Lb0b6Y2X4C7wxAhdtIWleLdFTqLrPkdwrAIsrGs5gw";
+
+const basemapEnum = "ArcGIS:Navigation";
+L.esri.Vector.vectorBasemapLayer(basemapEnum, {
+      apiKey: apiKey
+    }).addTo(map);
+    geocod=L.esri.Geocoding.geocodeService({apikey: apiKey})
+    var CV = false;
+    var IV = false;
+    var opt;
+    var  marker=L.marker([null,null]).bindPopup("Direccion Casa");
+    var  marker2=L.marker([null,null]).bindPopup("Direccion Tarbajo");
+    
+      async function Consulta(a){
+          if (a == 1) {
+              cedulac = document.getElementById("cedulac").value
+              const info = { cedulac }
+              const options = {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(info)
+              };
+              await fetch('/Mapdraw1', options)
+          }
+          else {
+              codigoc=document.getElementById("codigoc").value;
+              const info={codigoc};
+              const options={
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(info)
+                  };
+              await fetch('/Mapdraw2', options )
+              
+
+          }
+
+        
+      }
+
+
+      async function CheckCaso(){
+        codigoc=document.getElementById("codigoc").value;
+              const info={codigoc};
+              const options={
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(info)
+                  };
+              await fetch('/cosltcheck2', options )
+      }
+      async function CheckCedula(){
+        cedulac=document.getElementById("cedulac").value;
+              const info={cedulac};
+              const options={
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(info)
+                  };
+              await fetch('/cosltcheck1', options )
+      }
+      io().on('codigchecked', function (CdgChk) {
+      console.log('Verificación de Código');
+      if (CdgChk.CodigoCChecked.toString() == "1") {
+        CV = true;
+      } else {
+        CV = false;
+      }
+      if (CV == true) {
+        CV == false;
+        opt = 2;
+        Consulta(opt);
+      } else {
+        alert("Este Código no se encuentra registrado")
+        console.log("Increible")
+      }
+    });
+    io().on('cedulchecked', function (CdlaChk) {
+      console.log('Verificación de Cédula');
+      if (CdlaChk.CedulaCChecked.toString() == "1") {
+        IV = true;
+      } else {
+        IV = false;
+      }
+      if (IV == true) {
+        IV == false;
+        opt = 1;
+        Consulta(opt);
+      } else {
+        alert("Esta Cédula no se encuentra registrada")
+        console.log("Increible")
+      }
+    });
+    io().on('examen', function (rows) {
+      console.log('Historial de examenes');
+      console.log(rows);
+      var html = '<p>';
+      for (var i = 0; i < rows.length + 1; i++) {
+        if (i == 0) {
+          html += 'RESULTADO' + '  :  ' + 'FECHA' + '<br>';
+          html += '<br>';
+        } else {
+          
+          fechamod = rows[i - 1].fecha_examen;
+          html += rows[i - 1].resultados+ '  :  ' + fechamod.split('T', 1)[0] + '<br>';
+        }
+      }
+      html+="</p>"
+      document.getElementById("table2").innerHTML = html;
+    });
+    io().on('histcaso2', function (rows) {
+      console.log('Historial del caso');
+      console.log(rows);
+      var html = '<p>';
+      for (var i = 0; i < rows.length + 1; i++) {
+        if (i == 0) {
+          html += 'ESTADO' + '  :  ' + 'FECHA MODIFICACIÓN' + '<br>';
+          html += '<br>';
+        } else {
+          if (rows[i - 1].estado == "1") {
+            var state = "En Tratamiento Hospital";
+          } else if (rows[i - 1].estado == "2") {
+            var state = "En UCI";
+          } else if (rows[i - 1].estado == "3") {
+            var state = "Curado";
+          } else if (rows[i - 1].estado == "4") {
+            var state = "En Tratamiento Casa";
+          } else if (rows[i - 1].estado == "5") {
+            var state = "Sano";
+          } else if (rows[i - 1].estado == "6") {
+            var state = "Muerte";
+          }
+          fechamod = rows[i - 1].fecha_mod;
+          if(rows[i - 1].estado == null){
+            html += "" ;
+          } else{
+            html += state + '  :  ' + fechamod.split('T', 1)[0] + '<br>';}
+        }
+      }
+      html+="</p>"
+      document.getElementById("table").innerHTML = html;
+      
+    });
+    io().on('mapa',(rows)=>{
+        console.log(rows)
+        geocod.geocode().address(rows[0].dir_residencia).city('Barranquilla').region('Atlantico').run(function (err, results, response) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log(results);
+        console.log(results.results[0].latlng.lat);
+        marker.setLatLng([results.results[0].latlng.lat,results.results[0].latlng.lng]).addTo(map);
+        map.setView([results.results[0].latlng.lat,results.results[0].latlng.lng], 13);
+      });
+      geocod.geocode().address(rows[0].dir_trabajo).city('Barranquilla').region('Atlantico').run(function (err, results, response) {
+        if (err) {
+          console.log(err);
+          return;
+        }
+        console.log(results);
+        console.log(results.results[0].latlng.lat);
+        marker2.setLatLng([results.results[0].latlng.lat,results.results[0].latlng.lng]).addTo(map);
+        console.log(marker2._latlng)
+        console.log(L.latLngBounds(marker._latlng,marker2._latlng))
+        map.flyToBounds(L.latLngBounds(marker._latlng,marker2._latlng),{padding:[50,50]});
+
+      });       
+      
+
+
+
+    })
+    
+
+
+</script>
+
 </html>
+
+
+
+

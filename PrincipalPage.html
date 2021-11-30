@@ -7,6 +7,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CovidWeb Home</title>
   <link rel="stylesheet" href="PrincipalPage.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
 </head>
 
 <body>
@@ -14,17 +16,37 @@
     <a class="active">Principal</a>
     <div class="login-container">
       <form>
-        <input type="text" placeholder="Username" name="username" id="username">
-        <input style="margin-right:5px" type="password" placeholder="Password" name="psw" id="password">
-        <button type="button" onclick="check()">Login</button>
+        <input style="margin-right:5px" type="text" placeholder="Usuario" name="username" id="username">
+        <input style="margin-right:5px" type="password" placeholder="Contraseña" name="psw" id="password">
+        <button type="button" onclick="check()">
+          <logintxt>Ingresar</logintxt>
+        </button>
       </form>
     </div>
   </div>
+  <section class="form-register">
+    <h4>Últimos 7 días</h4>
+    <canvas id="Grafica" style="height:40vh; width:80vw"></canvas>
+  </section>
+
+  <section class="form-register">
+    <h4>Información de registros</h4>
+    <h5>Casos totales</h5>
+    <canvas id="Grafica2" style="height:40vh; width:80vw"></canvas>
+    <h5>Infectados</h5>
+    <canvas id="Grafica3" style="height:40vh; width:80vw"></canvas>
+    <h5>Resultados</h5>
+    <canvas id="Grafica4" style="height:40vh; width:80vw"></canvas>
+  </section>
+
 </body>
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
+  var Log = 0;
+
   async function check() {
+    Log = 1;
     user = document.getElementById('username').value;
     pass = document.getElementById('password').value;
     const info = { user, pass };
@@ -39,19 +61,235 @@
   }
 
   io().on('roluser', function (VUsu) {
-      console.log('Validación de Usuario y Contraseña');
-      console.log(VUsu.RolUsu.toString())
-      if (VUsu.RolUsu.toString() == "3") {
+    console.log('Validación de Usuario y Contraseña');
+    console.log(VUsu.RolUsu.toString())
+    if (VUsu.RolUsu.toString() == "3") {
+      if (Log = 1) {
+        Log = 0;
         location.href = '/PrincipalPageAdmin'
-      } else if (VUsu.RolUsu.toString() == "2") {
-        location.href = '/PrincipalPageAyudante'
-      } else if (VUsu.RolUsu.toString() == "1") {
-        location.href = '/PrincipalPageMedico'
-      } else {
-        alert("El Usuario o la Contraseña no existen o son incorrectos")
-          console.log("Usuario y Contraseña no coincidieron en base de datos")
       }
-    });
+    } else if (VUsu.RolUsu.toString() == "2") {
+      if (Log = 1) {
+        Log = 0;
+        location.href = '/PrincipalPageAyudante'
+      }
+    } else if (VUsu.RolUsu.toString() == "1") {
+      if (Log = 1) {
+        Log = 0;
+        location.href = '/PrincipalPageMedico'
+      }
+    } else {
+      alert("El Usuario o la Contraseña no existen o son incorrectos")
+      console.log("Usuario y Contraseña no coincidieron en base de datos")
+    }
+  });
+
+  datos()
+  async function datos() {
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+
+    };
+
+    await fetch('/resumen', options)
+  }
+  var dia = []
+  var number = []
+  var fecha = []
+  let miCanvas = document.getElementById("Grafica").getContext("2d");
+  io().on('resum', function (rows) {
+    dia = []
+    number = []
+    fecha = []
+    rows.forEach((wl) => { dia = [...dia, wl.día] })
+    rows.forEach((wl) => { number = [...number, wl.num_pacientes] })
+    rows.forEach((wl) => { fecha = [...fecha, wl.fechacom] })
+
+    console.log(fecha)
+
+    Chart.defaults.global.defaultFontColor = "#fff";
+
+    var chart = new Chart(miCanvas, {
+      type: 'bar',
+      data: {
+        labels: dia,
+        datasets: [{
+          label: "Cantidad de pacientes registrados",
+          data: number,
+          backgroundColor: 'rgba(47, 58, 74, 0.4)',
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+
+        color: '#fff',
+        responsive: true,
+        aspectRatio: 4,
+        maintainAspectRatio: true,
+        scales: {
+          xAxes: [{ gridLines: { color: 'rgba(0,0,0,0.1)' } }],
+          yAxes: [{ gridLines: { color: 'rgba(0,0,0,0.1)' } }],
+
+        },
+        animation: false,
+        legend: {
+          labels: {
+            fontColor: '#fff'
+          }
+        }
+      }
+    })
+  });
+
+
+  var infectados = 0
+  var muertos = 0
+  var curados = 0
+
+  var hospital = 0
+  var casa = 0
+  var uci = 0
+
+  let miCanvas2 = document.getElementById("Grafica2").getContext("2d");
+  let miCanvas3 = document.getElementById("Grafica3").getContext("2d");
+  let miCanvas4 = document.getElementById("Grafica4").getContext("2d");
+
+  io().on('info', function (rows) {
+    for (var i = 0; i < rows.length + 1; i++) {
+      if (i == 0) { }
+      else {
+        if (rows[i - 1].estado == "3") {
+          curados = rows[i - 1].cantidad
+          console.log("curados: " + curados)
+        }
+        else if (rows[i - 1].estado == "6") {
+          muertos = rows[i - 1].cantidad
+          console.log("muertos: " + muertos)
+        }
+        else if (rows[i - 1].estado == "1" || rows[i - 1].estado == "2" || rows[i - 1].estado == "4") {
+          infectados = infectados + rows[i - 1].cantidad
+          console.log("infectados: " + infectados)
+          if (rows[i - 1].estado == "1") {
+            hospital = rows[i - 1].cantidad
+            console.log("en hospital: " + hospital)
+          }
+          else if (rows[i - 1].estado == "4") {
+            casa = rows[i - 1].cantidad
+            console.log("en casa: " + casa)
+          }
+          else if (rows[i - 1].estado == "2") {
+            uci = rows[i - 1].cantidad
+            console.log("en UCI: " + uci)
+          }
+
+        }
+
+      }
+    }
+    Chart.defaults.global.defaultFontColor = "#fff";
+
+    var chart = new Chart(miCanvas2, {
+      type: 'pie',
+      data: {
+        labels: ['Infectados', 'Muertos', 'Curados'],
+        datasets: [{
+          data: [infectados, muertos, curados],
+          backgroundColor: ['#e7a901', '#ff2915', '#01e749'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+
+        color: '#fff',
+        responsive: true,
+        aspectRatio: 4,
+        maintainAspectRatio: true,
+        animation: false,
+        legend: {
+          labels: {
+            fontColor: '#fff'
+          }
+        }
+      }
+    })
+
+    var chart = new Chart(miCanvas3, {
+      type: 'pie',
+      data: {
+        labels: ['En tratamiento en casa', 'En tratamiento en casa', 'Internados en UCI', 'Muertos'],
+        datasets: [{
+          data: [casa, hospital, uci, muertos],
+          backgroundColor: ['#3cff15', '#e6ff15', '#ff8915', '#ff2915'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+
+        color: '#fff',
+        responsive: true,
+        aspectRatio: 4,
+        maintainAspectRatio: true,
+        animation: false,
+        legend: {
+          labels: {
+            fontColor: '#fff'
+          }
+        }
+      }
+    })
+  });
+
+  io().on('resultados', function (rows) {
+    var positivos
+    var negativos
+
+    for (var i = 0; i < rows.length + 1; i++) {
+      if (i == 0) { }
+      else {
+        if (rows[i - 1].resultados == "Positivo") {
+          positivos = rows[i - 1].cantidad
+          console.log("+: " + positivos)
+        }
+        else {
+          negativos = rows[i - 1].cantidad
+          console.log("-: " + negativos)
+        }
+      }
+    }
+
+    var chart = new Chart(miCanvas4, {
+      type: 'pie',
+      data: {
+        labels: ['Positivos', 'Negativos'],
+        datasets: [{
+          data: [positivos, negativos],
+          backgroundColor: ['#b5ff15', '#ff2915'],
+          borderColor: '#fff',
+          borderWidth: 2
+        }]
+      },
+      options: {
+        color: '#fff',
+        responsive: true,
+        aspectRatio: 4,
+        maintainAspectRatio: true,
+        animation: false,
+        legend: {
+          labels: {
+            fontColor: '#fff'
+          }
+        }
+      }
+    })
+
+  });
+
 
 </script>
 

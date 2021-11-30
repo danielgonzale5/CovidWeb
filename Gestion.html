@@ -104,7 +104,7 @@
     </span>
     <span>
       <h5>Fecha de Modificación</h5>
-      <input class="controls" type="date" id="fmod" name="fmod" value="2021-11-27" min="2000-01-01" max="2100-12-31">
+      <input class="controls" type="date" id="fmod" name="fmod" value="Date()" min="2019-01-01" max="2100-12-31">
     </span>
     <span>
       <input class="botons" type="button" onclick="CheckActualizar()" value="Actualizar">
@@ -297,10 +297,13 @@
     io().on('histcaso', function (rows) {
       console.log('Historial del caso');
       console.log(rows);
-      var html = '';
+      var html = '<table cellpadding="7" rules="all">';
       for (var i = 0; i < rows.length + 1; i++) {
         if (i == 0) {
-          html += 'ESTADO' + '  :  ' + 'FECHA MODIFICACIÓN' + '<br>';
+          html += '<tr>';
+            html += '<th>' +'ESTADO'+ '</th>'
+            html += '<th>' +'FECHA MODIFICACIÓN'+ '</th>'
+          html += '</tr>';
           html += '<br>';
         } else {
           if (rows[i - 1].estado == "1") {
@@ -317,9 +320,15 @@
             var state = "En Tratamiento Casa";
           }
           fechamod = rows[i - 1].fecha_mod;
-          html += state + '  :  ' + fechamod.split('T', 1)[0] + '<br>';
+          date = fechamod.split('T', 1)[0];
+          let table_elements = [state, date];
+          html += '<tr>';
+            html += '<td>' + table_elements[0] + '</td>'
+            html += '<td>' + table_elements[1] + '</td>'
+          html += '</tr>';
         }
       }
+      html+="</table>"
       document.getElementById("table").innerHTML = html;
     });
 
