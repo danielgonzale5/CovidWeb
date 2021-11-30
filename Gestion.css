@@ -128,3 +128,13 @@ table {
   text-align: center;
   color: white;
 }
+
+th {
+  border: 3px solid #1f53c5;
+  font-size: 20px;
+}
+
+td {
+  border: 2px solid #1f53c5;
+  font-size: 14px;
+}
