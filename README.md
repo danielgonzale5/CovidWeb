@@ -45,7 +45,7 @@ npm start                # http://localhost:3000
 
 ## Known issues
 
-This is the code as we submitted it in 2021, with one change: the database credentials were moved to `.env`. Looking back at it as a security engineer, it should never handle real patient data:
+This is the code as we submitted it in 2021, with two changes: the database credentials were moved to `.env`, and the map API keys were replaced with placeholders. Looking back at it as a security engineer, it should never handle real patient data:
 
 - **Hardcoded credentials in the history:** the original commits contain the RDS hostname and the database `root` password. That database instance was deleted long ago and the password is not used anywhere else.
 - **SQL injection, including on login:** every query is built by concatenating request values, so the login form can be bypassed with a classic `' OR '1'='1` payload.
@@ -54,8 +54,4 @@ This is the code as we submitted it in 2021, with one change: the database crede
 - **Results broadcast to every client:** answers are sent with `io.emit`, so every connected browser receives every other user's login result and query data, including patient records.
 - **Sensitive health data without protection:** national ID numbers, addresses and test results travel over plain HTTP and are stored unencrypted.
 - **Unauthenticated deploy webhook:** anyone can call `POST /github` and trigger a `git reset --hard && git pull` on the server.
-- **Map API keys in the frontend:** the Mapbox token and Esri API key are embedded in the HTML.
-
-## Team
-
-Built by a team of four students. The commit history and branches show each person's contributions.
+- **Map API keys in the frontend:** the Mapbox token and Esri API key were embedded in the HTML. They are replaced with placeholders now; to run the map pages, put your own keys in `Busqueda.html` and `MapaGeneral.html` where it says `[INSERT_MAPBOX_TOKEN]` and `[INSERT_ESRI_API_KEY]`.
