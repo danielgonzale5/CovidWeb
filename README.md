@@ -29,9 +29,12 @@ University team project for the *Telematics* course at Universidad del Norte (Ba
 
 The browser sends each request with `fetch()`, and the server answers through a Socket.IO event instead of the HTTP response.
 
-## My part
+## Relevant areas
 
-I owned the repository and wrote most of the application: 44 of the 57 commits, including the Node.js server (`CovidWeb.js`) and most of the pages (case management, registration, administration, search, the map and the dashboard). The app was deployed on the EC2 server I had set up earlier for [LocateCabs](https://github.com/danielgonzale5/LocateCabs).
+- Infrastructure: deployment on the AWS EC2 server set up for [LocateCabs](https://github.com/danielgonzale5/LocateCabs), with the MySQL database on Amazon RDS.
+- Server work in `CovidWeb.js`: the Express API, the SQL queries behind every feature and the Socket.IO responses.
+- Pages: case management, patient registration, user administration, search, the case map and the dashboard.
+- Integration: branch-per-person workflow with pull requests into `master`.
 
 ## Running it
 
