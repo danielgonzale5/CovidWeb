@@ -83,11 +83,12 @@ server.listen(port, function (error) {
 })
 
 //Llamado de las variables de entorno y de librería MySQL para la Base de datos.
+require('dotenv').config();
 const mysql = require('mysql2');
 var con = mysql.createConnection({
-  host: "covidweb.cglibizn6is8.us-east-2.rds.amazonaws.com",
-  user: "root",
-  password: "covid12345",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
   database: 'covidweb'
 });
 
