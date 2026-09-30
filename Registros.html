@@ -11,7 +11,7 @@
 
 <body>
   <div class="topnav">
-    <a href="/" class="logout">Log out</a>
+    <a href="/logout" class="logout">Log out</a>
     <a href="/PrincipalPageAyudante">Principal</a>
     <a class="active">Registros</a>
     <a href="/Gestion">Gestión</a>
@@ -43,8 +43,7 @@
     </span>
     <span>
       <h5>Fecha de nacimiento</h5>
-      <input class="controls" type="date" id="nacimiento" name="nacimiento" value="2021-01-01" min="1930-01-01"
-        max="Date()">
+      <input class="controls" type="date" id="nacimiento" name="nacimiento" value="2021-01-01" min="1930-01-01">
     </span>
     <span>
       <h5>Ingrese Dirección de Residencia</h5>
@@ -64,8 +63,7 @@
     </span>
     <span>
       <h5>Fecha del exámen</h5>
-      <input class="controls" type="date" id="fechaexa" name="fechaexa" value="Date()" min="2019-01-01"
-        max="Date()">
+      <input class="controls" type="date" id="fechaexa" name="fechaexa" min="2019-01-01">
     </span>
     <h5></h5>
     <span>
@@ -73,80 +71,13 @@
       <label class="controls" type="text" name="codigo" id="codigo"> - </label>
     </span>
     <span>
-      <input class="botons" type="submit" onclick="CheckCed()" value="Registrar">
+      <input class="botons" type="button" id="registerCase" value="Registrar">
     </span>
   </section>
 
-  <script src="/socket.io/socket.io.js"></script>
 
-  <script>
-    io().on('rceduchecked', function (CdChk) {
-      console.log('Verificación de cedula realizada');
-      if (CdChk.CedInfChk.toString() == "0") {
-        Registro_Caso();
-      } else if (CdChk.CedInfChk.toString() == "1") {
-        alert("Ya existe un caso con esta cédula, por favor gestione el caso")
-        console.log("Ya existe un caso con la cedula")
-      }
-    });
-
-    async function CheckCed() {
-      datacedu = document.getElementById('cedula').value;
-      const info = { datacedu };
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(info)
-      };
-      await fetch('/rcedinfo', options);
-    }
-
-    io().on('coderegis', function (CdR) {
-      console.log('Codigo de registro recibido');
-      document.getElementById("codigo").innerHTML = CdR.Code;
-    });
-
-    async function Registro_Caso() {
-      var cedula = document.getElementById('cedula').value;
-      var nombre = document.getElementById('nombres').value;
-      var apellido = document.getElementById('apellidos').value;
-      var presexo = document.getElementById('sexo').value;
-      if (presexo == "Masculino") {
-        var sexo = 0;
-      } else if (presexo == "Femenino") {
-        var sexo = 1;
-      } else {
-        alert("Por favor seleccione el sexo")
-          console.log("No seleccionó el sexo")
-          return;
-      }
-      var fecha_nacimiento = document.getElementById('nacimiento').value;
-      var direccion_residencia = document.getElementById('dirres').value;
-      var direccion_trabajo = document.getElementById('dirtra').value;
-      var preresultado_examen = document.getElementById('resultado').value;
-      if (preresultado_examen == "Positivo") {
-        var resultado_examen = 0;
-      } else if (preresultado_examen == "Negativo") {
-        var resultado_examen = 1;
-      } else {
-        alert("Por favor seleccione el resultado")
-          console.log("No seleccionó un resultado")
-          return;
-      }
-      var fecha_examen = document.getElementById('fechaexa').value;
-      const info = { nombre, apellido, cedula, sexo, fecha_nacimiento, direccion_residencia, direccion_trabajo, resultado_examen, fecha_examen };
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(info)
-      };
-      await fetch('/regis', options);
-    }
-  </script>
+  <script src="/js/api.js"></script>
+  <script src="/js/registros.js"></script>
 </body>
 
 </html>

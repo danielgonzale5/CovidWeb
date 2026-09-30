@@ -20,23 +20,23 @@ Every finding was reproduced on a local lab and nowhere else:
 
 ## Summary
 
-| ID | Finding | Severity | CVSS |
-| --- | --- | --- | --- |
-| [CW-01](#cw-01-sql-injection-in-every-lookup-including-the-login) | SQL injection in every lookup, including the login | Critical | 9.1 |
-| [CW-02](#cw-02-no-server-side-authentication-or-access-control) | No server-side authentication or access control | Critical | 9.1 |
-| [CW-03](#cw-03-every-answer-is-broadcast-to-every-connected-browser) | Every answer is broadcast to every connected browser | High | 7.5 |
-| [CW-04](#cw-04-denial-of-service-one-request-stops-the-server) | Denial of service: one request stops the server | High | 7.5 |
-| [CW-05](#cw-05-vulnerable-and-unused-dependencies) | Vulnerable and unused dependencies | High | per advisory |
-| [CW-06](#cw-06-unauthenticated-deploy-webhook) | Unauthenticated deploy webhook | Medium | 6.5 |
-| [CW-07](#cw-07-stored-xss-in-case-management) | Stored XSS in case management | Medium | 6.1 |
-| [CW-08](#cw-08-passwords-and-patient-data-written-to-the-logs) | Passwords and patient data written to the logs | Medium | 5.5 |
-| [CW-09](#cw-09-passwords-stored-in-plain-text) | Passwords stored in plain text | Medium | 4.9 |
-| [CW-10](#cw-10-a-new-case-can-be-given-another-cases-number) | A new case can be given another case's number | Medium | 4.8 |
-| [CW-11](#cw-11-third-party-scripts-without-integrity-checks) | Third-party scripts without integrity checks | Medium | 4.7 |
-| [CW-12](#cw-12-database-credentials-in-the-git-history) | Database credentials in the git history | Low | n/a |
-| [CW-13](#cw-13-health-data-in-transit-at-rest-and-with-third-parties) | Health data in transit, at rest and with third parties | Informational | n/a |
+| ID | Finding | Severity | CVSS | Status |
+| --- | --- | --- | --- | --- |
+| [CW-01](#cw-01-sql-injection-in-every-lookup-including-the-login) | SQL injection in every lookup, including the login | Critical | 9.1 | Fixed |
+| [CW-02](#cw-02-no-server-side-authentication-or-access-control) | No server-side authentication or access control | Critical | 9.1 | Fixed |
+| [CW-03](#cw-03-every-answer-is-broadcast-to-every-connected-browser) | Every answer is broadcast to every connected browser | High | 7.5 | Fixed |
+| [CW-04](#cw-04-denial-of-service-one-request-stops-the-server) | Denial of service: one request stops the server | High | 7.5 | Fixed |
+| [CW-05](#cw-05-vulnerable-and-unused-dependencies) | Vulnerable and unused dependencies | High | per advisory | Fixed |
+| [CW-06](#cw-06-unauthenticated-deploy-webhook) | Unauthenticated deploy webhook | Medium | 6.5 | Fixed |
+| [CW-07](#cw-07-stored-xss-in-case-management) | Stored XSS in case management | Medium | 6.1 | Fixed |
+| [CW-08](#cw-08-passwords-and-patient-data-written-to-the-logs) | Passwords and patient data written to the logs | Medium | 5.5 | Fixed |
+| [CW-09](#cw-09-passwords-stored-in-plain-text) | Passwords stored in plain text | Medium | 4.9 | Fixed |
+| [CW-10](#cw-10-a-new-case-can-be-given-another-cases-number) | A new case can be given another case's number | Medium | 4.8 | Fixed |
+| [CW-11](#cw-11-third-party-scripts-without-integrity-checks) | Third-party scripts without integrity checks | Medium | 4.7 | Fixed |
+| [CW-12](#cw-12-database-credentials-in-the-git-history) | Database credentials in the git history | Low | n/a | Credentials dead; documented |
+| [CW-13](#cw-13-health-data-in-transit-at-rest-and-with-third-parties) | Health data in transit, at rest and with third parties | Informational | n/a | Documented |
 
-The fixes are tracked in a separate pull request. Each finding below lists the change it needs.
+CW-01 to CW-11 are fixed in the 2026 rewrite of the server (`server.js` and `src/`), and each has a regression test in `test/`. CW-12 and CW-13 need action outside the code and are documented. Each finding below lists the change it needs, and [Verification after the fix](#verification-after-the-fix) shows the same reproduction steps run against the fixed version.
 
 ---
 
@@ -323,7 +323,43 @@ On its own this needs privileged access, hence the score. Combined with CW-01 it
 - **At rest.** The database stores health data unencrypted. On RDS, enable storage encryption and encrypted backups, and restrict who can take snapshots.
 - **Third parties.** The case map and the search page send each patient's home and work address from the browser to Esri's geocoding service. Under Ley 1581 that is a transfer of personal data to a processor, which needs a basis and should be minimised. For example, geocode once on registration, store only coordinates rounded to the neighbourhood, and never send names or ID numbers with the address.
 
+## Verification after the fix
+
+The fixed version was started with `docker compose` from a fresh `.env`, seeded with synthetic accounts and patients, and sent the same benign inputs:
+
+```
+[CW-02] GET /Administracion with no session -> 303 to /
+[CW-02] anonymous POST /consulta1 -> 401
+[CW-02] anonymous POST /regisinfo creating an administrator -> 401
+[CW-02] assistant POST /regisinfo -> 403 | doctor POST /consulta1 -> 403
+[CW-02/09] rows for lab-intruder: 0
+[CW-03] assistant lookup answered over HTTP -> 200 | Socket.IO endpoint -> 404
+[CW-07] registering a patient named <b>lab</b> -> 400
+[CW-10] registration answer (own case number): 201 {"Code":13}
+[CW-04] lookup of an ID number that does not exist -> 404
+[CW-01] login with a single quote as the user name -> 401
+[CW-04] server still answering -> 200 | 20 KB body -> 413
+[CW-06] POST /github -> 404 (the route does not exist without a secret)
+[CW-08] passwords or patient data in the app logs: none
+[CW-08] sample log lines:
+    INFO audit: user 2 viewed case 1
+    INFO audit: user 2 registered case 13
+    WARN auth: failed login from ::ffff:172.18.0.1
+[CW-09] stored password format: asistente.demo scrypt:16384:8:1:...
+[CW-01] app DB user trying DELETE: ERROR 1142 (42000): DELETE command denied to user 'covidweb'
+[CW-04] app container: Up
+[CW-05] npm audit --omit=dev: found 0 vulnerabilities
+```
+
+Every page was then used in a browser, once per role:
+- the login form, including pressing Enter;
+- case lookup and status update as an assistant;
+- search and the case map as a doctor;
+- user creation as an administrator.
+
+An assistant who opens an administrator page is sent back to their own menu. The console showed no CSP violations or script errors.
+
 ## Out of scope and notes
 
-- **Browser pages.** Reviewed only for how they handle data from the server. The fix moves their scripts into files, but it does not redesign them.
+- **Browser pages.** Reviewed only for how they handle data from the server. The fix moves their scripts into files, but it does not redesign them. One more issue turned up while doing so: the login inputs sat in a `<form>` with no handler, so pressing Enter submitted it as a GET and put the password in the URL, and from there in browser history and server logs. The login form now always posts JSON.
 - **Lab only.** No production system was touched. The EC2 and RDS resources from 2021 no longer exist, and every record in the lab was synthetic.

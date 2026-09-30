@@ -1,27 +1,22 @@
 {
   "name": "covidweb",
-  "version": "1.0.0",
-  "description": "",
-  "main": "CovidWeb.js",
-  "scripts": {
-    "start": "nodemon CovidWeb.js"
+  "version": "2.0.0",
+  "private": true,
+  "description": "COVID-19 case management: patient intake, case tracking, case map and a public dashboard.",
+  "main": "server.js",
+  "engines": {
+    "node": ">=22"
   },
-  "keywords": [],
-  "author": "",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "dev": "node --watch --env-file-if-exists=.env server.js",
+    "test": "node --test test/*.test.js",
+    "init-env": "node scripts/init-env.js",
+    "create-user": "node --env-file-if-exists=.env scripts/create-user.js"
+  },
   "license": "ISC",
   "dependencies": {
-    "chart.js": "^3.6.0",
-    "dotenv": "^10.0.0",
-    "ejs": "^3.1.6",
-    "esri-leaflet-geocoder": "^3.1.1",
-    "express": "^4.17.1",
-    "express-myconnection": "^1.0.4",
-    "leaflet": "^1.7.1",
-    "mysql2": "^2.3.3",
-    "no-ip": "^1.0.2",
-    "socket.io": "^4.2.0"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.12"
+    "express": "^5.2.1",
+    "mysql2": "^3.24.5"
   }
 }
