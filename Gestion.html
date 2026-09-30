@@ -11,7 +11,7 @@
 
 <body>
   <div class="topnav">
-    <a href="/" class="logout">Log out</a>
+    <a href="/logout" class="logout">Log out</a>
     <a href="/PrincipalPageAyudante">Principal</a>
     <a href="/Registros">Registros</a>
     <a class="active">Gestión</a>
@@ -39,7 +39,7 @@
     </span>
     <h5></h5>
     <span>
-      <input class="botons" type="button" onclick="PreConsultar()" value="Consultar">
+      <input class="botons" type="button" id="lookupCase" value="Consultar">
     </span>
   </section>
   <section class="form-register">
@@ -104,274 +104,18 @@
     </span>
     <span>
       <h5>Fecha de Modificación</h5>
-      <input class="controls" type="date" id="fmod" name="fmod" value="Date()" min="2019-01-01" max="2100-12-31">
+      <input class="controls" type="date" id="fmod" name="fmod" min="2019-01-01" max="2100-12-31">
     </span>
     <span>
-      <input class="botons" type="button" onclick="CheckActualizar()" value="Actualizar">
+      <input class="botons" type="button" id="updateCase" value="Actualizar">
     </span>
   </section>
   <section class="form-register">
     <h4>Historial</h4>
     <div class="controls" name="table" id="table"></div>
   </section>
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-
-    var NV = false;
-    var CV = false;
-    var IV = false;
-    var opt;
-
-    function PreConsultar() {
-      console.log("consultando")
-      var ccedu = document.getElementById('cedulac').value;
-      var cnombre = document.getElementById('nombresc').value;
-      var capellido = document.getElementById('apellidosc').value;
-      var ccodigo = document.getElementById('codigoc').value;
-      if (ccedu != '') {
-        CheckCedula();
-      } else if (ccodigo != '') {
-        console.log("entre")
-        CheckCodigo();
-      } else if (cnombre != '' && capellido == '') {
-        alert("Por favor ingrese el apellido")
-        console.log("Falta el apellido")
-      } else if (cnombre == '' && capellido != '') {
-        alert("Por favor ingrese el nombre")
-        console.log("Falta el nombre")
-      } else if (cnombre != '' && capellido != '') {
-        CheckNombre();
-      }
-    }
-
-    function CheckActualizar() {
-      var actr = document.getElementById('estadoa').value;
-      var codcnt = document.getElementById('codigo').innerText;
-      var est = document.getElementById('estado').innerText;
-      console.log("Estado: ",est)
-      if (est == "MUERTE") {
-        alert("Este caso no permite más modificaciones")
-        console.log("El usuario esta muerto")
-        return
-      }
-      if (actr == "") {
-        alert("Por favor seleccione una actualización")
-        console.log("No se selecciono actualización")
-      } else {
-        if (codcnt == "-") {
-          alert("Por favor realice una consulta antes de actualizar")
-          console.log("Falta el codigo: ", codcnt)
-        } else {
-          Actualizar();
-        }
-      }
-    }
-
-    async function Actualizar() {
-      var actestado = document.getElementById('estadoa').value;
-      var actcedu = document.getElementById('cedula').textContent;
-      var actcode = document.getElementById('codigo').textContent;
-      var actfemod = document.getElementById('fmod').value;
-      const info = { actestado, actcedu, actcode, actfemod };
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(info)
-      };
-      await fetch('/actestate', options);
-    }
-
-    io().on('cedulchecked', function (CdlaChk) {
-      console.log('Verificación de Cédula');
-      if (CdlaChk.CedulaCChecked.toString() == "1") {
-        IV = true;
-      } else {
-        IV = false;
-      }
-      if (IV == true) {
-        IV == false;
-        opt = 1;
-        Consultar(opt);
-      } else {
-        alert("Esta Cédula no se encuentra registrada")
-        console.log("Increible")
-      }
-    });
-
-    io().on('codigchecked', function (CdgChk) {
-      console.log('Verificación de Código');
-      if (CdgChk.CodigoCChecked.toString() == "1") {
-        CV = true;
-      } else {
-        CV = false;
-      }
-      if (CV == true) {
-        CV == false;
-        opt = 2;
-        Consultar(opt);
-      } else {
-        alert("Este Código no se encuentra registrado")
-        console.log("Increible")
-      }
-    });
-
-    io().on('namechecked', function (NameChk) {
-      console.log('Verificación de nombres y apellidos');
-      if (NameChk.NameChecked.toString() == "1") {
-        NV = true;
-      } else {
-        NV = false;
-      }
-      if (NV == true) {
-        NV == false;
-        opt = 3;
-        Consultar(opt);
-      } else {
-        alert("Existe más de un usuario con el nombre igresado o no existe")
-        console.log("Increible")
-      }
-    });
-
-    async function CheckCedula() {
-      var cedulac = document.getElementById('cedulac').value;
-      const info = { cedulac };
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(info)
-      };
-      await fetch('/cosltcheck1', options);
-    }
-
-    async function CheckCodigo() {
-      console.log("CheckCodigo")
-      var codigoc = document.getElementById('codigoc').value;
-      const info = { codigoc };
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(info)
-      };
-      await fetch('/cosltcheck2', options);
-    }
-
-    async function CheckNombre() {
-      var nombrec = document.getElementById('nombresc').value;
-      var apellidoc = document.getElementById('apellidosc').value;
-      const info = { nombrec, apellidoc };
-      const options = {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(info)
-      };
-      await fetch('/cosltcheck3', options);
-    }
-
-    io().on('infocase', function (InfCs) {
-      console.log('Información del caso');
-      document.getElementById("nombres").innerHTML = InfCs.NombreCs;
-      document.getElementById("apellidos").innerHTML = InfCs.ApellidoCs;
-      document.getElementById("cedula").innerHTML = InfCs.CedulaCs;
-      document.getElementById("sexo").innerHTML = InfCs.SexoCs;
-      document.getElementById("nacimiento").innerHTML = InfCs.NacimientoCs;
-      document.getElementById("dirres").innerHTML = InfCs.ResidenciaCs;
-      document.getElementById("dirtra").innerHTML = InfCs.TrabajoCs;
-      document.getElementById("resultado").innerHTML = InfCs.ResultadoCs;
-      document.getElementById("fechaexa").innerHTML = InfCs.FExaCs;
-      document.getElementById("codigo").innerHTML = InfCs.CodigoCs;
-    });
-
-    io().on('estadocaso', function (SteCs) {
-      console.log('Estado del paciente');
-      document.getElementById("estado").innerHTML = SteCs.EstadoCs;
-    });
-
-    io().on('histcaso', function (rows) {
-      console.log('Historial del caso');
-      console.log(rows);
-
-      var html = '<table cellpadding="7" rules="all">';
-      for (var i = 0; i < rows.length + 1; i++) {
-        if (i == 0) {
-          html += '<tr>';
-            html += '<th>' +'ESTADO'+ '</th>'
-            html += '<th>' +'FECHA MODIFICACIÓN'+ '</th>'
-          html += '</tr>';
-          html += '<br>';
-        } else {
-          if (rows[i - 1].estado == "1") {
-            var state = "En Tratamiento Hospital";
-          } else if (rows[i - 1].estado == "2") {
-            var state = "En UCI";
-          } else if (rows[i - 1].estado == "3") {
-            var state = "Curado";
-          } else if (rows[i - 1].estado == "4") {
-            var state = "En Tratamiento Casa";
-          } else if (rows[i - 1].estado == "5") {
-            var state = "Sano";
-          } else if (rows[i - 1].estado == "6") {
-            var state = "Muerte";
-          }
-          fechamod = rows[i - 1].fecha_mod;
-          date = fechamod.split('T', 1)[0];
-          let table_elements = [state, date];
-          html += '<tr>';
-            html += '<td>' + table_elements[0] + '</td>'
-            html += '<td>' + table_elements[1] + '</td>'
-          html += '</tr>';
-        }
-      }
-      html+="</table>"
-      document.getElementById("table").innerHTML = html;
-    });
-
-    async function Consultar(opt) {
-      var ctcedu = document.getElementById('cedulac').value;
-      var ctnombre = document.getElementById('nombresc').value;
-      var ctapellido = document.getElementById('apellidosc').value;
-      var ctcodigo = document.getElementById('codigoc').value;
-      if (opt == 1) {
-        const info = { ctcedu };
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(info)
-        };
-        await fetch('/consulta1', options);
-      } else if (opt == 2) {
-        const info = { ctcodigo };
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(info)
-        };
-        await fetch('/consulta2', options);
-      } else if (opt == 3) {
-        const info = { ctnombre, ctapellido };
-        const options = {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(info)
-        };
-        await fetch('/consulta3', options);
-      }
-    }
-
-  </script>
+  <script src="/js/api.js"></script>
+  <script src="/js/gestion.js"></script>
 </body>
 
 </html>
