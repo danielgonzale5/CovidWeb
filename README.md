@@ -4,7 +4,7 @@ Web platform to register and follow COVID-19 cases: patient intake, test results
 
 University team project for the *Telematics* course at Universidad del Norte (Barranquilla, Colombia), November 2021. It ran on AWS EC2 with the database on Amazon RDS.
 
-In 2026 I reviewed the 2021 code as a security engineer and fixed what I found. The review is in [SECURITY_REVIEW.md](SECURITY_REVIEW.md), with a CVSS score, a local reproduction and the fix for each finding. The code as we submitted it in 2021 is at commit [`739b2dd`](https://github.com/danielgonzale5/CovidWeb/tree/739b2dd).
+In 2026 I reviewed the 2021 code as a security engineer and fixed what I found. The review is in [SECURITY_REVIEW.md](SECURITY_REVIEW.md), with a CVSS score, CWE and OWASP Top 10 classification, a local reproduction and the fix for each finding. A one-page version for non-technical readers, with the business risk and the remediation roadmap, is in [EXECUTIVE_SUMMARY.md](EXECUTIVE_SUMMARY.md). The code as we submitted it in 2021 is at commit [`739b2dd`](https://github.com/danielgonzale5/CovidWeb/tree/739b2dd).
 
 ## Features
 

@@ -20,21 +20,23 @@ Every finding was reproduced on a local lab and nowhere else:
 
 ## Summary
 
-| ID | Finding | Severity | CVSS | Status |
-| --- | --- | --- | --- | --- |
-| [CW-01](#cw-01-sql-injection-in-every-lookup-including-the-login) | SQL injection in every lookup, including the login | Critical | 9.1 | Fixed |
-| [CW-02](#cw-02-no-server-side-authentication-or-access-control) | No server-side authentication or access control | Critical | 9.1 | Fixed |
-| [CW-03](#cw-03-every-answer-is-broadcast-to-every-connected-browser) | Every answer is broadcast to every connected browser | High | 7.5 | Fixed |
-| [CW-04](#cw-04-denial-of-service-one-request-stops-the-server) | Denial of service: one request stops the server | High | 7.5 | Fixed |
-| [CW-05](#cw-05-vulnerable-and-unused-dependencies) | Vulnerable and unused dependencies | High | per advisory | Fixed |
-| [CW-06](#cw-06-unauthenticated-deploy-webhook) | Unauthenticated deploy webhook | Medium | 6.5 | Fixed |
-| [CW-07](#cw-07-stored-xss-in-case-management) | Stored XSS in case management | Medium | 6.1 | Fixed |
-| [CW-08](#cw-08-passwords-and-patient-data-written-to-the-logs) | Passwords and patient data written to the logs | Medium | 5.5 | Fixed |
-| [CW-09](#cw-09-passwords-stored-in-plain-text) | Passwords stored in plain text | Medium | 4.9 | Fixed |
-| [CW-10](#cw-10-a-new-case-can-be-given-another-cases-number) | A new case can be given another case's number | Medium | 4.8 | Fixed |
-| [CW-11](#cw-11-third-party-scripts-without-integrity-checks) | Third-party scripts without integrity checks | Medium | 4.7 | Fixed |
-| [CW-12](#cw-12-database-credentials-in-the-git-history) | Database credentials in the git history | Low | n/a | Credentials dead; documented |
-| [CW-13](#cw-13-health-data-in-transit-at-rest-and-with-third-parties) | Health data in transit, at rest and with third parties | Informational | n/a | Documented |
+| ID | Finding | Severity | CVSS | CWE | OWASP Top 10:2025 | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| [CW-01](#cw-01-sql-injection-in-every-lookup-including-the-login) | SQL injection in every lookup, including the login | Critical | 9.1 | CWE-89 | A05:2025 | Fixed |
+| [CW-02](#cw-02-no-server-side-authentication-or-access-control) | No server-side authentication or access control | Critical | 9.1 | CWE-602 | A01:2025 | Fixed |
+| [CW-03](#cw-03-every-answer-is-broadcast-to-every-connected-browser) | Every answer is broadcast to every connected browser | High | 7.5 | CWE-200 | A01:2025 | Fixed |
+| [CW-04](#cw-04-denial-of-service-one-request-stops-the-server) | Denial of service: one request stops the server | High | 7.5 | CWE-248 | A10:2025 | Fixed |
+| [CW-05](#cw-05-vulnerable-and-unused-dependencies) | Vulnerable and unused dependencies | High | per advisory | CWE-1395 | A03:2025 | Fixed |
+| [CW-06](#cw-06-unauthenticated-deploy-webhook) | Unauthenticated deploy webhook | Medium | 6.5 | CWE-345 | A08:2025 | Fixed |
+| [CW-07](#cw-07-stored-xss-in-case-management) | Stored XSS in case management | Medium | 6.1 | CWE-79 | A05:2025 | Fixed |
+| [CW-08](#cw-08-passwords-and-patient-data-written-to-the-logs) | Passwords and patient data written to the logs | Medium | 5.5 | CWE-532 | A09:2025 | Fixed |
+| [CW-09](#cw-09-passwords-stored-in-plain-text) | Passwords stored in plain text | Medium | 4.9 | CWE-256 | A04:2025 | Fixed |
+| [CW-10](#cw-10-a-new-case-can-be-given-another-cases-number) | A new case can be given another case's number | Medium | 4.8 | CWE-362 | A06:2025 | Fixed |
+| [CW-11](#cw-11-third-party-scripts-without-integrity-checks) | Third-party scripts without integrity checks | Medium | 4.7 | CWE-829 | A08:2025 | Fixed |
+| [CW-12](#cw-12-database-credentials-in-the-git-history) | Database credentials in the git history | Low | n/a | CWE-798 | A07:2025 | Credentials dead; documented |
+| [CW-13](#cw-13-health-data-in-transit-at-rest-and-with-third-parties) | Health data in transit, at rest and with third parties | Informational | n/a | CWE-319 | A04:2025 | Documented |
+
+CWE IDs are from [MITRE's CWE list](https://cwe.mitre.org/); OWASP categories are from the [OWASP Top 10:2025](https://owasp.org/Top10/2025/). Each finding shows its closest OWASP category and, where more than one weakness is involved, the main CWE first.
 
 CW-01 to CW-11 are fixed in the 2026 rewrite of the server (`server.js` and `src/`), and each has a regression test in `test/`. CW-12 and CW-13 need action outside the code and are documented. Each finding below lists the change it needs, and [Verification after the fix](#verification-after-the-fix) shows the same reproduction steps run against the fixed version.
 
@@ -43,6 +45,8 @@ CW-01 to CW-11 are fixed in the 2026 rewrite of the server (`server.js` and `src
 ## CW-01: SQL injection in every lookup, including the login
 
 **Critical, 9.1** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H`
+
+**Classification:** [CWE-89](https://cwe.mitre.org/data/definitions/89.html) SQL Injection · OWASP A05:2025 Injection
 
 **Where:**
 - the login query: [`CovidWeb.js:113`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L113)
@@ -78,6 +82,8 @@ process exit code: 1
 ## CW-02: No server-side authentication or access control
 
 **Critical, 9.1** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N`
+
+**Classification:** [CWE-602](https://cwe.mitre.org/data/definitions/602.html) Client-Side Enforcement of Server-Side Security, [CWE-862](https://cwe.mitre.org/data/definitions/862.html) Missing Authorization, [CWE-306](https://cwe.mitre.org/data/definitions/306.html) Missing Authentication for Critical Function · OWASP A01:2025 Broken Access Control
 
 **Where:**
 - every route: [`CovidWeb.js:20-73`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L20-L73) (pages) and [`L106-665`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L106-L665) (API)
@@ -115,6 +121,8 @@ POST /regisinfo creating a user with role 3 (administrator) -> row created:
 
 **High, 7.5** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N`
 
+**Classification:** [CWE-200](https://cwe.mitre.org/data/definitions/200.html) Exposure of Sensitive Information to an Unauthorized Actor · OWASP A01:2025 Broken Access Control
+
 **Where:**
 - every `io.emit` in `CovidWeb.js`, for example the login result at [`L124`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L124) and the patient record at [`L310`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L310)
 - the matching `io().on(...)` handlers in every page
@@ -137,6 +145,8 @@ patient record delivered to the anonymous browser, fields: CodigoCs, CedulaCs, N
 ## CW-04: Denial of service: one request stops the server
 
 **High, 7.5** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H`
+
+**Classification:** [CWE-248](https://cwe.mitre.org/data/definitions/248.html) Uncaught Exception, [CWE-770](https://cwe.mitre.org/data/definitions/770.html) Allocation of Resources Without Limits or Throttling · OWASP A10:2025 Mishandling of Exceptional Conditions
 
 **Where:**
 - `JSON.parse(JSON.stringify(rows[0]))` with no check that a row exists: [`L288`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L288), [`L366`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L366), [`L445`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L445)
@@ -172,6 +182,8 @@ The login request in CW-01 ended the process the same way.
 
 **High (per advisory; `npm audit` reports 3 critical and 12 high)**
 
+**Classification:** [CWE-1395](https://cwe.mitre.org/data/definitions/1395.html) Dependency on Vulnerable Third-Party Component · OWASP A03:2025 Software Supply Chain Failures
+
 **Where:** [`package.json`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/package.json) and `package-lock.json`
 
 **What is wrong:** `npm audit --omit=dev` reports 19 vulnerable packages:
@@ -194,6 +206,8 @@ The login request in CW-01 ended the process the same way.
 ## CW-06: Unauthenticated deploy webhook
 
 **Medium, 6.5** `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:L/A:L`
+
+**Classification:** [CWE-345](https://cwe.mitre.org/data/definitions/345.html) Insufficient Verification of Data Authenticity, [CWE-306](https://cwe.mitre.org/data/definitions/306.html) Missing Authentication for Critical Function · OWASP A08:2025 Software or Data Integrity Failures
 
 **Where:** [`CovidWeb.js:12-16`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L12-L16)
 
@@ -219,6 +233,8 @@ server log: GIT PULL realizado exitosamente.
 
 **Medium, 6.1** `CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N`
 
+**Classification:** [CWE-79](https://cwe.mitre.org/data/definitions/79.html) Cross-site Scripting · OWASP A05:2025 Injection
+
 **Where:** [`Gestion.html:280-289`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/Gestion.html#L280-L289)
 
 **What is wrong:** the case management page writes the patient's name, surname and both addresses into the page with `innerHTML`. Those values come straight from the registration form and are stored as typed. Because of CW-02, anyone can register a patient.
@@ -240,6 +256,8 @@ name stored and sent to the innerHTML sink unchanged: <b>lab</b>
 
 **Medium, 5.5** `CVSS:3.1/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:N/A:N`
 
+**Classification:** [CWE-532](https://cwe.mitre.org/data/definitions/532.html) Insertion of Sensitive Information into Log File · OWASP A09:2025 Security Logging and Alerting Failures
+
 **Where:** the login prints the user name and password at [`CovidWeb.js:108`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L108) and [`L112`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L112). Every other endpoint prints its full request body, which carries patient data (for example [`L178`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L178)).
 
 **What is wrong:** every login writes the password in clear to the process output. Every registration and lookup writes the patient's ID number, name, addresses and test result.
@@ -257,6 +275,8 @@ the login password appears in the server output: true
 ## CW-09: Passwords stored in plain text
 
 **Medium, 4.9** `CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:N/A:N`
+
+**Classification:** [CWE-256](https://cwe.mitre.org/data/definitions/256.html) Plaintext Storage of a Password · OWASP A04:2025 Cryptographic Failures
 
 **Where:** user creation at [`CovidWeb.js:168-169`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L168-L169) and the login comparison at [`L113`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L113)
 
@@ -279,6 +299,8 @@ On its own this needs privileged access, hence the score. Combined with CW-01 it
 
 **Medium, 4.8** `CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N`
 
+**Classification:** [CWE-362](https://cwe.mitre.org/data/definitions/362.html) Race Condition · OWASP A06:2025 Insecure Design
+
 **Where:** [`CovidWeb.js:197`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/CovidWeb.js#L197)
 
 **What is wrong:** after inserting a case, the server reads back "the newest case in the table" and broadcasts its number, instead of using the ID of the row it just inserted.
@@ -290,6 +312,8 @@ On its own this needs privileged access, hence the score. Combined with CW-01 it
 ## CW-11: Third-party scripts without integrity checks
 
 **Medium, 4.7** `CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:L/I:L/A:N`
+
+**Classification:** [CWE-829](https://cwe.mitre.org/data/definitions/829.html) Inclusion of Functionality from Untrusted Control Sphere · OWASP A08:2025 Software or Data Integrity Failures
 
 **Where:**
 - Chart.js 2.9.3 from jsDelivr on the four dashboard pages: [`PrincipalPage.html:10`](https://github.com/danielgonzale5/CovidWeb/blob/739b2dd/PrincipalPage.html#L10) and the same line in the three role pages
@@ -305,6 +329,8 @@ On its own this needs privileged access, hence the score. Combined with CW-01 it
 
 **Low (the credentials no longer work)**
 
+**Classification:** [CWE-798](https://cwe.mitre.org/data/definitions/798.html) Use of Hard-coded Credentials · OWASP A07:2025 Authentication Failures
+
 **Where:** commits [`abae817`](https://github.com/danielgonzale5/CovidWeb/commit/abae817) and [`9b1d224`](https://github.com/danielgonzale5/CovidWeb/commit/9b1d224). [`eb725e6`](https://github.com/danielgonzale5/CovidWeb/commit/eb725e6) moved the values to `.env`.
 
 **What is wrong:** the first versions of `CovidWeb.js` contain the Amazon RDS hostname and the database `root` password. The Mapbox token and Esri API key are also in the history before [`8539d71`](https://github.com/danielgonzale5/CovidWeb/commit/8539d71).
@@ -318,6 +344,8 @@ On its own this needs privileged access, hence the score. Combined with CW-01 it
 ## CW-13: Health data in transit, at rest and with third parties
 
 **Informational**
+
+**Classification:** [CWE-319](https://cwe.mitre.org/data/definitions/319.html) Cleartext Transmission of Sensitive Information, [CWE-311](https://cwe.mitre.org/data/definitions/311.html) Missing Encryption of Sensitive Data · OWASP A04:2025 Cryptographic Failures
 
 - **In transit.** The app is served over plain HTTP, so logins, ID numbers and clinical status cross the network in clear. Terminate TLS in front of it and mark the session cookie `Secure`.
 - **At rest.** The database stores health data unencrypted. On RDS, enable storage encryption and encrypted backups, and restrict who can take snapshots.
@@ -363,3 +391,4 @@ An assistant who opens an administrator page is sent back to their own menu. The
 
 - **Browser pages.** Reviewed only for how they handle data from the server. The fix moves their scripts into files, but it does not redesign them. One more issue turned up while doing so: the login inputs sat in a `<form>` with no handler, so pressing Enter submitted it as a GET and put the password in the URL, and from there in browser history and server logs. The login form now always posts JSON.
 - **Lab only.** No production system was touched. The EC2 and RDS resources from 2021 no longer exist, and every record in the lab was synthetic.
+
