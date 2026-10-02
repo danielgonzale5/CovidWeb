@@ -59,7 +59,11 @@ docker compose exec app node scripts/seed-demo.js
 ```
 
 1. `npm run init-env` writes a `.env` with random database passwords.
-2. `docker compose up` starts MySQL, creates the schema and a least-privilege user, and starts the app on `127.0.0.1:3000`.
+2. `docker compose up` starts MySQL, creates the schema and a least-privilege user, and starts the app on `127.0.0.1:3000`. The containers are hardened:
+   - The database is on an internal network with no route out, and its port is never published.
+   - Both containers have a read-only root filesystem and cannot gain privileges.
+   - Both drop every Linux capability. The database keeps only the four its entrypoint needs to set up the data directory, and its running process holds none.
+   - The app has memory and process limits.
 3. `seed-demo.js` creates one account per role (`admin.demo`, `asistente.demo`, `medico.demo`) and prints their passwords once. It also adds a dozen synthetic patients: every name, ID number (all starting with 9999) and address is made up.
 4. Open `http://localhost:3000` and log in with one of those accounts.
 
