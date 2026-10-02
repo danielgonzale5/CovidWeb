@@ -39,6 +39,8 @@ async function main() {
     for (const account of ACCOUNTS) {
       const password = crypto.randomBytes(12).toString('base64url');
       await db.createUser({ ...account, passwordHash: hashPassword(password) });
+      // Printing each freshly generated demo password once is the point of the script.
+      // nosemgrep: secrets-or-request-data-in-logs
       console.log(`  ${account.usuario.padEnd(15)} ${password}   role ${account.rol}`);
     }
     for (let i = 0; i < FIRST.length; i += 1) {
